@@ -44,7 +44,7 @@
           {{ $t('Aсосий рўйхат') }}
         </el-menu-item>
       </router-link>
-      <router-link :to="{name: 'Report'}">
+      <router-link :to="{name: 'RegionReport'}">
         <el-menu-item index="10" style="float: right; line-height: 90px; height: 90px;">
           <i class="el-icon-reading text-white" /> Ҳисобот
         </el-menu-item>

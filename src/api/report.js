@@ -1,7 +1,16 @@
 import request from '@/utils/request'
-export function reportAll() {
+export function reportAll(query) {
   return request({
-    url: 'report/all',
-    method: 'get'
+    url: 'report/report',
+    method: 'get',
+    params: query
+  })
+}
+
+export function reportDistricts(data) {
+  return request({
+    url: 'report/districts/' + data.region_id,
+    method: 'get',
+    params: data
   })
 }

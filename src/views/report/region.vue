@@ -19,13 +19,16 @@
           width="60"
           type="index"
         />
-        <el-table-column label="Ҳудуд номлари">
-          <template slot-scope="scope">
-            <a href="#" @click="showCityReport(scope.row)">{{ scope.row.region }}</a>
+        <el-table-column label="Вилоятлар">
+          <template slot-scope="scope" >
+            <a href="#" @click="showCityReport(scope.row)">{{ scope.row.region_name }}</a>
           </template>
         </el-table-column>
-        <el-table-column label="Хизмат кўрсатилишини кутаётган фуқаролар сони" prop="total" />
-        <el-table-column label="Суғурта полиси берилган фуқаролар сони" prop="counts" />
+        <el-table-column v-for="social_status in social_statuses" :label=" social_status.name " >
+          <template slot-scope="scope" v-for="repo in report">
+            <p> {{ scope.row.social1 }} </p>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
   </div>
@@ -50,7 +53,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ report: 'report/GET_REPORT', regions: 'citizen/GET_REGIONS' }),
+    ...mapGetters({
+      report: 'report/GET_REPORT',
+      regions: 'citizen/GET_REGIONS',
+      social_statuses: 'citizen/GET_SOCIAL_STATUSES'
+    }),
     current_date() {
       return parseTime(new Date())
     }
@@ -60,7 +67,11 @@ export default {
     this.fetchRegions()
   },
   methods: {
-    ...mapActions({ fetchReport: 'report/insurance', fetchRegions: 'region/list' }),
+    ...mapActions({
+      fetchReport: 'report/reportAll',
+      fetchSocialStatuses: 'citizen/socialStatuses',
+      fetchRegions: 'citizen/regions'
+    }),
     citizenShow(id) {
       localStorage.setItem('id', id)
       this.$router.push({ name: 'OperatorCitizensShow', params: { id: id }})
@@ -68,35 +79,41 @@ export default {
     applyfilter() {
       this.fetchCitizens(this.filter)
     },
+    sendFilter() {
+      this.loaded = false
+      this.fetchRegions(this.filter).then((res) => {
+        this.loaded = true
+      })
+    },
     showCityReport(region) {
       localStorage.setItem('region_name', region.region)
-      this.$router.push({ name: 'InsuranceCityReport', params: { user_id: region.user_id }})
+      this.$router.push({ name: 'DistrictReport', params: { region_id: region.region_id }})
     }
   }
 }
 </script>
 
 <style>
-    .form-control {
-        display: block;
-        width: 100%;
-        height: calc(1.5em + .75rem + 2px);
-        padding: .375rem .75rem;
-        font-size: 1rem;
-        font-weight: 400;
-        line-height: 1.5;
-        color: #495057;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid #ced4da;
-        border-radius: .25rem;
-        -webkit-transition: border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
-        transition: border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
-        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
-    }
-  table tbody tr:first-child {
-       font-weight: bold;
-       color: #2F2F2F;
-     }
+.form-control {
+  display: block;
+  width: 100%;
+  height: calc(1.5em + .75rem + 2px);
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  -webkit-transition: border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+  transition: border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+}
+table tbody tr:first-child {
+  font-weight: bold;
+  color: #2F2F2F;
+}
 </style>

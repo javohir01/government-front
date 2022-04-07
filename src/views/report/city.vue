@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <el-row>
-      <router-link :to="{name: 'InsuranceRegionReport'}">
+      <router-link :to="{name: 'RegionReport'}">
         <el-button type="primary" class="float-left mb-1" icon="el-icon-arrow-left" size="small">Вилоят кесимидаги ҳисоботга қайтиш</el-button>
       </router-link>
     </el-row>
@@ -12,119 +12,78 @@
         <p class="text-center">{{ current_date }} холатида</p>
       </div>
     </el-row>
-    <el-divider content-position="left">{{ region }}</el-divider>
+    <el-divider content-position="left">{{ region.region }}</el-divider>
     <div class="bg-white box-shadow p-4 container">
-      <el-row class="mb-3">
-        <el-form
-          :model="filter"
-          :rules="rules"
-          label-position="top"
-          class="top-label-custom mini"
-        >
-          <el-col :span="5">
-            <el-form-item label="Дан">
-              <date-dropdown
-                v-model="filter.from_date"
-                min="2019"
-                max="2024"
-                months-names="Январь, Февраль, Март, Апрель, Май, Июнь, Июль, Август, Сентябрь, Октябрь, Ноябрь, Декабрь"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item label="Гача">
-              <date-dropdown
-                v-model="filter.to_date"
-                min="2019"
-                max="2024"
-                default="12.12.2024"
-                months-names="Январь, Февраль, Март, Апрель, Май, Июнь, Июль, Август, Сентябрь, Октябрь, Ноябрь, Декабрь"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="5">
-            <el-form-item label="Паспорт">
-              <el-input v-model="filter.passport" type="text" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="3">
-            <el-form-item label="Суғурта тури">
-              <el-select v-model="filter.insurance_type" class="w-100" @change="applyfilter">
-                <el-option :value="null" label="Барчаси" />
-                <el-option label="Ҳаёт ва соғлиқ" value="Ҳаёт ва соғлиқ" />
-                <el-option label="Кредит суғуртаси" value="Кредит суғуртаси" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="3">
-            <el-form-item label="Қидириш">
-              <el-button icon="el-icon-search" size="medium" type="primary" @click="applyfilter" />
-            </el-form-item>
-          </el-col>
-        </el-form>
-        <el-col :span="3">
-          <el-button type="primary" class="float-right mt-4 font-weight-bold" icon="el-icon-download" :loading="isLoading" @click="exportToXlsx()">Юклаб олиш</el-button>
-        </el-col>
-      </el-row>
-      <el-table
-        class="mb-1 mx-auto table-custom"
-        :data="reports.data"
-        border
-      >
-        <el-table-column
-          fixed
-          label="№"
-          width="60"
-          :index="indexMethod"
-          type="index"
-        />
-        <el-table-column label="ФИО" width="350">
-          <template slot="header">
-            <label>ФИО</label> <br>
-            &nbsp;
+      <table v-loading="isLoading" class="table table-hover table-bordered">
+        <thead>
+          <tr>
+            <th> {{ $t('Т/р') }}</th>
+            <th> {{ $t('Ҳудудлар') }}</th>
+<!--            <th> {{ $t('Жами аҳоли сони') }}</th>-->
+            <th v-for="social_status in social_statuses">{{ social_status.name }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template>
+  <!--          <tr>-->
+  <!--            <td></td>-->
+  <!--            <td>{{ $t('Жами аҳоли сони') }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].citizens_count }}</td>-->
+  <!--&lt;!&ndash;            <td>{{ report_city.report_count[0].count_social1 }}</td>&ndash;&gt;-->
+  <!--            <td>{{ report_city.report_count[0].count_social2 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social3 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social4 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social5 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social6 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social7 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social8 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social9 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social10 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social11 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social12 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social13 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social14 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social15 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social16 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social17 }}</td>-->
+  <!--            <td>{{ report_city.report_count[0].count_social18 }}</td>-->
+  <!--          </tr>-->
+            <tr v-for="(social, index) in districts_report" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ social.district_name }}</td>
+  <!--            <td> {{ social.region_count }}</td>-->
+              <td> {{ social.social1 }}</td>
+              <td> {{ social.social2 }}</td>
+              <td> {{ social.social3 }}</td>
+              <td> {{ social.social4 }}</td>
+              <td> {{ social.social5 }}</td>
+              <td> {{ social.social6 }}</td>
+              <td> {{ social.social7 }}</td>
+              <td> {{ social.social8 }}</td>
+              <td> {{ social.social9 }}</td>
+              <td> {{ social.social10 }}</td>
+              <td> {{ social.social11 }}</td>
+              <td> {{ social.social12 }}</td>
+              <td> {{ social.social13 }}</td>
+              <td> {{ social.social14 }}</td>
+              <td> {{ social.social15 }}</td>
+              <td> {{ social.social16 }}</td>
+              <td> {{ social.social17 }}</td>
+              <td> {{ social.social18 }}</td>
+            </tr>
           </template>
-          <template slot-scope="scope">
-            <!--            style="color: #007bff; word-break: break-word; cursor:pointer; font-size: 15px; margin-bottom: 0;" @click.prevent="reportshow(scope.row.id)"-->
-            <p>
-              {{ [scope.row.s_name, scope.row.f_name,scope.row.m_name ].join(' ') }}
-            </p>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="Паспорт"
-          prop="passport"
-          width="150"
-        >
-        </el-table-column>
-        <el-table-column label="Туғилган санаси">
-          <template slot-scope="scope">{{ parseToTime(scope.row.birth_date) }}</template>
-        </el-table-column>
-        <el-table-column
-          label="Фуқаро яшаш манзили"
-          width="200"
-        >
-          <template slot-scope="scope">
-            {{ scope.row.region + ', ' + scope.row.city }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="Суғурта полиси берилган сана"
-          width="180"
-        >
-          <template slot-scope="scope">{{ parseToTime(scope.row.sold_date) }}</template>
-        </el-table-column>
-        <el-table-column label="Суғурта тури" prop="insurance_type" />
-      </el-table>
-      <el-pagination
-        background
-        :total="reports.pagination.total"
-        :page-size="1 * reports.pagination.limit"
-        :page-sizes="[10, 20, 50]"
-        layout="sizes, prev, pager, next"
-        class="mt-3"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+        </tbody>
+      </table>
+<!--      <el-pagination-->
+<!--          background-->
+<!--          :total="reports.pagination.total"-->
+<!--          :page-size="1 * reports.pagination.limit"-->
+<!--          :page-sizes="[10, 20, 50]"-->
+<!--          layout="sizes, prev, pager, next"-->
+<!--          class="mt-3"-->
+<!--          @size-change="handleSizeChange"-->
+<!--          @current-change="handleCurrentChange"-->
+<!--      />-->
     </div>
   </div>
 </template>
@@ -135,59 +94,38 @@ import DateDropdown from 'vue-date-dropdown'
 import { parseTime } from '@/utils/'
 // import EventBus from '../../operator/event-bus'
 import { toXlsx } from '@/utils/exports'
-
 export default {
-  name: 'City',
+  name: 'District',
+  // eslint-disable-next-line vue/no-unused-components
   components: { DateDropdown },
   data() {
     return {
+      showInfo: true,
       filter: {
-        user_id: null,
+        region_id: null,
         passport: '',
-        limit: '',
-        page: '',
+        limit: 0,
+        page: 0,
+        total: 1,
         from_date: null,
         to_date: null,
         insurance_type: null,
-        getAll: 0
+        getAll: 0,
+        social_statuses: ''
       },
       rules: {},
       loaded: false,
       isLoading: false,
-      columns: [
-        {
-          label: 'ФИО',
-          field: 'fio'
-        },
-        {
-          label: 'Туғилган сана',
-          field: 'birth_date'
-        },
-        {
-          label: 'Паспорт',
-          field: 'passport'
-        },
-        {
-          label: 'Фуқаро яшаш манзили',
-          field: 'region_city'
-        },
-        {
-          label: 'Суғурта полиси берилган сана',
-          field: 'sold_date'
-        },
-        {
-          label: 'Суғурта полиси рақами',
-          field: 'serial_number'
-        },
-        {
-          label: 'Суғурта тури',
-          field: 'insurance_type'
-        }
-      ]
     }
   },
   computed: {
-    ...mapGetters({ reports: 'report/GET_INSURANCE_CITY', regions: 'region/GET_REGIONS' }),
+    ...mapGetters({
+      user: 'auth/USER',
+      reports: 'report/GET_DISTRICTS_REPORT',
+      regions: 'citizen/GET_REGIONS',
+      social_statuses: 'citizen/GET_SOCIAL_STATUSES',
+      districts_report: 'report/GET_DISTRICTS_REPORT'
+    }),
     current_date() {
       return parseTime(new Date())
     },
@@ -196,21 +134,33 @@ export default {
     }
   },
   mounted() {
-    this.fetchCityReport({ user_id: this.$route.params.user_id }).then((res) => {
-      this.filter.limit = res.result.per_page
-      this.filter.page = res.result.current_page
-      this.filter.user_id = this.$route.params.user_id
-    })
+    // this.fetchReport().then(response => {
+    //   if (response.success) {
+    //     this.isLoading = false
+    //   }
+    // })
+    this.fetchReport()
     this.fetchRegions()
+    this.fetchSocialStatuses()
+    this.fetchReportDistricts(
+      { region_id: this.$route.params.region_id }).then((res) => {
+      this.filter.region_id = this.$route.params.region_id
+    })
+    // this.fetchRegions()
   },
   methods: {
-    ...mapActions({ fetchCityReport: 'report/insurance_city', fetchCityReportAll: 'report/insurance_city_all', fetchRegions: 'region/list' }),
+    ...mapActions({
+      fetchReportDistricts: 'report/reportDistricts',
+      fetchReport: 'report/reportAll',
+      fetchSocialStatuses: 'citizen/socialStatuses',
+      fetchRegions: 'citizen/regions'
+    }),
     handleCurrentChange(val) {
       this.filter.page = val
       this.fetchCityReport(this.filter).then((res) => {
         this.filter.limit = res.result.per_page
         this.filter.page = res.result.current_page
-        this.filter.user_id = this.$route.params.user_id
+        this.filter.region_id = this.$route.params.region_id
       })
     },
     handleSizeChange(val) {

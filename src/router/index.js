@@ -48,10 +48,22 @@ export const constantRoutes = [
         component: () => import('@/views/choose-type'),
         meta: { middleware: [auth] }
       },
+      // {
+      //   name: 'Report',
+      //   path: '/report',
+      //   component: () => import('@/views/report/report'),
+      //   meta: { middleware: [auth] }
+      // },
       {
-        name: 'Report',
+        name: 'RegionReport',
         path: '/report',
-        component: () => import('@/views/report/report'),
+        component: () => import('@/views/report/region'),
+        meta: { middleware: [auth] }
+      },
+      {
+        name: 'DistrictReport',
+        path: 'report/:region_id',
+        component: () => import('@/views/report/city'),
         meta: { middleware: [auth] }
       },
       {
