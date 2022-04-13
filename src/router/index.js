@@ -5,6 +5,7 @@ import auth from './middleweres/auth'
 import citizensRouter from './modules/citizen'
 import middlewarePipeline from './middlewarePipeline'
 import partiesRouter from './modules/parties'
+import applicationsRouter from './modules/application'
 Vue.use(Router)
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -38,22 +39,22 @@ export const constantRoutes = [
     children: [
       {
         name: 'Login',
-        path: '/',
+        path: '/login',
         component: () => import('@/views/Login'),
         meta: { middleware: [auth] }
       },
       {
-        name: 'ChooseType',
-        path: '/choose-type',
-        component: () => import('@/views/choose-type'),
+        name: 'Choose',
+        path: '/',
+        component: () => import('@/views/choose')
+        // meta: { middleware: [auth] }
+      },
+      {
+        name: 'ApplicationIndex',
+        path: 'applications',
+        component: () => import('@/views/application/index'),
         meta: { middleware: [auth] }
       },
-      // {
-      //   name: 'Report',
-      //   path: '/report',
-      //   component: () => import('@/views/report/report'),
-      //   meta: { middleware: [auth] }
-      // },
       {
         name: 'RegionReport',
         path: '/report',
@@ -80,6 +81,13 @@ export const constantRoutes = [
     children: [
       ...citizensRouter,
       ...partiesRouter
+    ]
+  },
+  {
+    path: '/',
+    component: () => import('@/layouts/main'),
+    children: [
+      ...applicationsRouter
     ]
   },
   {

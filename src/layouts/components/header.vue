@@ -9,7 +9,7 @@
           <div v-if="is_auth" class="d-flex" style="cursor: pointer" @click="logoutHandle()">
             {{ $t('Тизимдан чиқиш') }} <img alt="logo" src="@/assets/images/logout.svg" height="14px" class="ml-2 mt-1">
           </div>
-          <div v-else class="d-flex" style="cursor: pointer" @click="loginViaAuthService()">
+          <div v-else class="d-flex" style="cursor: pointer" @click="loginAdmin()">
             {{ $t('Aдминистраторлар учун кириш') }}
             <img
                 alt="logo"
@@ -39,14 +39,19 @@
         <el-menu-item index="2-1" @click="selectedLanguage = 'Ўзбекча'">Ўзбекча</el-menu-item>
         <el-menu-item index="2-1" @click="selectedLanguage = 'Русский'">Русский</el-menu-item>
       </el-submenu>
-      <router-link :to="{name: 'CitizensIndex'}">
+      <router-link v-if="is_auth" :to="{name: 'CitizensIndex'}">
         <el-menu-item index="10" style="float: right; line-height: 90px; height: 90px;">
           {{ $t('Aсосий рўйхат') }}
         </el-menu-item>
       </router-link>
-      <router-link :to="{name: 'RegionReport'}">
+      <router-link v-if="is_auth" :to="{name: 'RegionReport'}">
         <el-menu-item index="10" style="float: right; line-height: 90px; height: 90px;">
           <i class="el-icon-reading text-white" /> Ҳисобот
+        </el-menu-item>
+      </router-link>
+      <router-link v-if="!is_auth" :to="{name: 'ApplicationCheck'}">
+        <el-menu-item index="10" style="float: right; line-height: 90px; height: 90px;">
+          <i class="el-icon-reading text-white" /> Ариза ҳолатини текшириш
         </el-menu-item>
       </router-link>
     </el-menu>
@@ -76,6 +81,9 @@ export default {
     ...mapActions({ logout: 'auth/logout' }),
     handleSelect(index, indexPath) {
       console.log(index)
+    },
+    loginAdmin() {
+      this.$router.push({ name: 'Login' })
     },
     loginViaAuthService() {
       window.location = String(this.authServiceLink).replace('[domain]', window.location.hostname)

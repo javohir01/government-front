@@ -53,7 +53,13 @@ export function bulk(type, list) {
     data: dataJSON
   })
 }
-
+export function getProviderByPassport(query) {
+  return request({
+    url: '/citizens/passport',
+    method: 'post',
+    params: query
+  })
+}
 export function passport(data) {
   return request({
     url: 'citizens/passport',
@@ -84,3 +90,4 @@ export function socialStatuses(query) {
     params: query
   })
 }
+

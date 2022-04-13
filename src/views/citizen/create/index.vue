@@ -28,6 +28,8 @@ export default {
       form: {
         id: '',
         passport: '',
+        series: '',
+        number: '',
         l_name: '',
         f_name: '',
         m_name: '',

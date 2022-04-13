@@ -112,7 +112,7 @@ module.exports = {
                   name: 'chunk-libs',
                   test: /[\\/]node_modules[\\/]/,
                   priority: 10,
-                  chunks: 'initial' // only package third parties that are initially dependent
+                  chunks: 'initial' // only package third application that are initially dependent
                 },
                 commons: {
                   name: 'chunk-commons',

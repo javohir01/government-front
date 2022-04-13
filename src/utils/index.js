@@ -16,7 +16,7 @@ export function parseTime(time, cFormat) {
   let date
   if (typeof time === 'object') {
     date = time
-  } else {
+  } else {S
     if ((typeof time === 'string') && (/^[0-9]+$/.test(time))) {
       time = parseInt(time)
     }

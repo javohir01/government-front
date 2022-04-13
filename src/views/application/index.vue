@@ -7,38 +7,29 @@
       color="rgb(49, 134, 251)"
       loader="bars"
     />
-    <!--    <router-link :to="{ name: 'ChooseType' }">-->
-    <!--      <el-button type="text" icon="el-icon-arrow-left">{{ $t('Ортга қайтиш') }}</el-button>-->
-    <!--    </router-link>-->
-    <h4 class="font-weight-bold">{{ title }}</h4>
-<!--    <button-->
-<!--        type="button"-->
-<!--        class="btn"-->
-<!--        @click="showModal"-->
-<!--    >-->
-<!--      Open Modal!-->
-<!--    </button>-->
 
-    <Modal
-        v-show="isModalVisible"
-        @close="closeModal"
-    />
+    <h4 class="font-weight-bold">{{ title }}</h4>
     <div v-loading="!loaded" class="bg-white box-shadow p-4">
-      <template v-if="user.role_id === 3">
-        <router-link :to="{name: 'ApplicationIndex', query: { type: $route.query.type } }">
-          <el-button type="success" class="float-left mb-4 font-weight-bold">{{ $t('Сўровлар') }}</el-button>
-        </router-link>
-      </template>
       <el-button type="success" class="float-right mb-4 font-weight-bold" icon="el-icon-download" :loading="isLoading" @click="exportToXlsx()">{{ $t('Юклаб олиш') }}</el-button>
-      <template v-if="user.role_id === 3">
-        <router-link :to="{name: 'CitizensCreate', query: { type: $route.query.type } }">
-          <el-button type="success" class="float-right mb-4 font-weight-bold" icon="el-icon-plus">{{ $t('Aъзо қўшиш') }}</el-button>
-        </router-link>
-      </template>
+<!--      <template v-if="user.role_id === 3">-->
+<!--        <router-link :to="{name: 'CitizensCreate', query: { type: $route.query.type } }">-->
+<!--          <el-button type="success" class="float-right mb-4 font-weight-bold" icon="el-icon-plus">{{ $t('Aъзо қўшиш') }}</el-button>-->
+<!--        </router-link>-->
+<!--      </template>-->
+<!--      <el-tabs type="border-card" v-model="filter.status" @tab-click="handleClick">-->
+<!--        <el-tab-pane label="User" name="first" v-if="status === 1">   </el-tab-pane>-->
+<!--        <el-tab-pane label="Config" name="second">Tasdiqlangan</el-tab-pane>-->
+<!--        <el-tab-pane label="Role" name="third">Rad etilgan</el-tab-pane>-->
+<!--      </el-tabs>-->
+      <el-radio-group v-model="filter.status" style="margin-bottom: 30px;" @change="sendFilter">
+        <el-radio-button value="1" label="1">Yangi</el-radio-button>
+        <el-radio-button value="2" label="2">Tasdiqlangan</el-radio-button>
+        <el-radio-button value="3" label="3">Rad etilgan</el-radio-button>
+      </el-radio-group>
       <el-table
         v-if="loaded"
         class="mb-1 mx-auto table-custom"
-        :data="citizens"
+        :data="applications"
         border
       >
         <el-table-column
@@ -54,7 +45,7 @@
             <input v-model="filter.full_name" class="form-control form-control-sm w-100">
           </template>
           <template slot-scope="scope">
-            <router-link :to="{ name:'CitizensShow', params:{id: scope.row.id}, query: {type: $route.query.type } }">
+            <router-link :to="{ name:'ApplicationsShow', params:{id: scope.row.id}, query: {type: $route.query.type } }">
               {{ [scope.row.l_name, scope.row.f_name,scope.row.m_name ].join(' ') }}
             </router-link>
           </template>
@@ -62,7 +53,7 @@
         <el-table-column label="" width="130" prop="region">
           <template slot="header">
             <p>{{ $t('Ҳудуд') }}</p>
-            <select v-model="filter.region_id" class="w-100" style="height: 28px" @change="sendFilterRegion">
+            <select v-model="filter.region_id" class="w-100" style="height: 28px" @change="sendFilter">
               <option :value="null">{{ $t('Барчаси') }}</option>
               <template>
                 <option v-for="region in regions" :value="region.id" @keyup="sendFilter">{{ region.name_cyrl }}</option>
@@ -71,7 +62,7 @@
           </template>
           <template slot-scope="scope">
             <p>{{ (scope.row.region && scope.row.region.name_cyrl) ? scope.row.region.name_cyrl: '---' }}</p>
-<!--            {{filter.region}}-->
+            {{filter.region}}
           </template>
         </el-table-column>
         <el-table-column width="140" prop="city">
@@ -89,10 +80,10 @@
             {{filter.district}}
           </template>
         </el-table-column>
-        <el-table-column width="140" prop="city">
+        <el-table-column width="230" prop="city">
           <template slot="header">
             <p>{{ $t('Ижтимоий холати') }}</p>
-            <select v-model="filter.social_id" class="w-100" style="height: 28px" @change="sendFilter">
+            <select v-model="filter.social_id" class="w-250" style="height: 28px" @change="sendFilter">
               <option :value="null">{{ $t('Барчаси') }}</option>
               <template >
                 <option v-for="social_status in social_statuses" :value="social_status.id" @keyup="sendFilter">{{ social_status.name }}</option>
@@ -104,13 +95,22 @@
             {{filter.social_status}}
           </template>
         </el-table-column>
-        <el-table-column width="110">
+        <el-table-column width="150">
           <template slot="header">
             <p>{{ $t('Манзили') }}</p>
             <input v-model="filter.address" type="text" class="w-100">
           </template>
           <template slot-scope="scope">
             {{ scope.row.address }}
+          </template>
+        </el-table-column>
+        <el-table-column width="120">
+          <template slot="header">
+            <p>{{ $t('Телефон рақами') }}</p>
+            <input v-model="filter.phone_number" type="text" class="w-100">
+          </template>
+          <template slot-scope="scope">
+            {{ scope.row.phone_number }}
           </template>
         </el-table-column>
         <el-table-column width="110">
@@ -120,15 +120,6 @@
           </template>
           <template slot-scope="scope">
             {{ scope.row.birth_date }}
-          </template>
-        </el-table-column>
-        <el-table-column width="110">
-          <template slot="header">
-            <p>{{ $t('Телефон рақами') }}</p>
-            <input v-model="filter.phone_number" type="text" class="w-100">
-          </template>
-          <template slot-scope="scope">
-            {{ scope.row.phone_number }}
           </template>
         </el-table-column>
         <el-table-column
@@ -155,23 +146,21 @@
           <template slot="header">
             <el-button class="mt-3" type="primary" size="mini" @click="sendFilter()">{{ $t('Қидириш') }}</el-button>
           </template>
-          <template v-if="user.role_id === 3" slot-scope="scope">
-            <router-link :to="{ name:'CitizensEdit', params:{id: scope.row.id}, query: { type: $route.query.type } }">
-              <el-button size="mini" type="info">{{ $t('Таҳрирлаш') }}</el-button>
-            </router-link>
-            <el-button size="mini" class="m-1" type="danger" @click="deleteCitizen(scope.row.id)">{{ $t('Ўчириш') }}</el-button>
+          <template slot-scope="scope">
+            <el-button v-if="scope.row.status === 1" size="mini" type="info" @click="confirmApplication(scope.row.id)">{{ $t('Тасдиқлаш') }}</el-button>
+            <el-button v-if="scope.row.status === 1" size="mini" class="m-1" type="danger" @click="rejectApplication(scope.row.id)">{{ $t('Рад етиш') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
-        background
-        :total="filter.total"
-        :page-size="1 * filter.limit"
-        layout="prev, pager, next"
-        class="mt-3"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+<!--      <el-pagination-->
+<!--        background-->
+<!--        :total="filter.total"-->
+<!--        :page-size="1 * filter.limit"-->
+<!--        layout="prev, pager, next"-->
+<!--        class="mt-3"-->
+<!--        @size-change="handleSizeChange"-->
+<!--        @current-change="handleCurrentChange"-->
+<!--      />-->
     </div>
   </div>
 </template>
@@ -181,16 +170,13 @@ import { mapActions, mapGetters } from 'vuex'
 import { parseTime } from '@/utils/'
 import { toXlsx } from '@/utils/exports'
 import Swal from 'sweetalert2'
-import Modal from '@/components/Modal'
 
 export default {
-  name: 'CitizenIndex',
-  components: {
-    Modal
-  },
+  name: 'ApplicationIndex',
   data() {
     return {
-      isModalVisible: false,
+      tabPosition: 'left',
+      activeName: 'first',
       filter: {
         l_name: '',
         f_name: '',
@@ -206,55 +192,21 @@ export default {
         page: 0,
         total: 1,
         region: '',
-        phone_number: null,
         district: '',
         social_status: '',
         full_name: ''
       },
+      status: 1,
       loaded: false,
-      columns: [
-        {
-          label: this.$t('Ҳудуд'),
-          field: 'region'
-        },
-        {
-          label: this.$t('Туман(Шахар'),
-          field: 'district'
-        },
-        {
-          label: this.$t('ФИО'),
-          field: 'full_name'
-        },
-        {
-          label: this.$t('Паспорт'),
-          field: 'passport'
-        },
-        {
-          label: this.$t('Манзили'),
-          field: 'address'
-        },
-        {
-          label: this.$t('ЖШШИР'),
-          field: 'pin'
-        },
-        {
-          label: this.$t('туғилган куни'),
-          field: 'birth_date'
-        },
-        {
-          label: this.$t('Ижтимоий холати'),
-          field: 'social_status'
-        }
-      ],
       fullPage: true,
       isLoading: false
     }
   },
   computed: {
-    ...mapGetters({ citizens: 'citizen/GET_CITIZENS', citizens_pagination: 'citizen/GET_CITIZENS_PAGINATION',
-      user: 'auth/USER', full_name: 'citizen/FULL_NAME', regions: 'citizen/GET_REGIONS', districts: 'citizen/GET_DISTRICTS', social_statuses: 'citizen/GET_SOCIAL_STATUSES' }),
+    ...mapGetters({ applications: 'application/GET_APPLICATIONS', applications_pagination: 'application/GET_APPLICATIONS_PAGINATION',
+      user: 'auth/USER', full_name: 'application/FULL_NAME', regions: 'citizen/GET_REGIONS', districts: 'citizen/GET_DISTRICTS', social_statuses: 'citizen/GET_SOCIAL_STATUSES' }),
     title() {
-      return this.$t('Фуқаролар рўйхати')
+      return this.$t('Аризалар рўйхати')
     },
     currentYear() {
       return String(new Date().getFullYear())
@@ -268,29 +220,7 @@ export default {
       return years
     }
   },
-  // mounted() {
-  //   // if (this.$route.query.l_name) {
-  //   this.filter.el_name = this.$route.query.l_name
-  //   this.sendFilter()
-  //   // } else {
-  //   this.fetchCitizens().then((res) => {
-  //     this.filter.limit = this.citizens_pagination.limit
-  //     this.filter.page = this.citizens_pagination.page
-  //     this.filter.total = this.citizens_pagination.total
-  //   })
-  //   // }
-  // },
   mounted() {
-    if (this.$route.query.emblef_name) {
-      this.filter.emblef_name = this.$route.query.emblef_name
-      this.sendFilter()
-    } else {
-      this.fetchCitizens().then((res) => {
-        this.filter.limit = this.citizens_pagination.limit
-        this.filter.page = this.citizens_pagination.page
-        this.filter.total = this.citizens_pagination.total
-      })
-    }
     if (this.user.role_id === 1) {
       this.fetchRegions().then((res) => {
         this.sendFilter()
@@ -307,35 +237,47 @@ export default {
     }
   },
   methods: {
-    ...mapActions({ fetchCitizens: 'citizen/index', indexFull: 'citizen/indexFull',
-      fetchDistricts: 'citizen/districts', fetchSocialStatuses: 'citizen/socialStatuses', fetchRegions: 'citizen/regions', deleteCitizenAction: 'citizen/delete' }),
+    ...mapActions({ fetchApplications: 'application/index',
+      fetchDistricts: 'citizen/districts', fetchSocialStatuses: 'citizen/socialStatuses', fetchRegions: 'citizen/regions', rejected: 'application/rejected', confirmed: 'application/confirmed' }),
+    rejectApplication(id) {
+      // console.log(this.status)
+      this.status = 3
+      this.rejected(id)
+      //     .then((res) => {
+      //   this.sendFilter()
+      //   this.status = id
+      // })
+    },
+    confirmApplication(id) {
+      // console.log(this.status)
+      this.status = 2
+      this.confirmed(id)
+      //     .then((res) => {
+      //   this.sendFilter()
+      //   this.status = id
+      // })
+    },
     getTime(date) {
       return parseTime(date)
     },
-    showModal() {
-      this.isModalVisible = true;
-    },
-    closeModal() {
-      this.isModalVisible = false;
-    },
     handleCurrentChange(val) {
-      this.filter.limit = this.citizens_pagination.limit
+      this.filter.limit = this.applications_pagination.limit
       this.filter.page = val
       this.sendFilter()
     },
     handleSizeChange(val) {
       this.filter.limit = val
-      this.filter.page = this.citizens_pagination.page
+      this.filter.page = this.applications_pagination.page
       this.sendFilter()
     },
     sendFilter() {
       this.filter.page = null
       this.loaded = false
-      this.fetchCitizens(this.filter).then((res) => {
+      this.fetchApplications(this.filter).then((res) => {
         this.loaded = true
-        this.filter.limit = this.citizens_pagination.limit
-        this.filter.page = this.citizens_pagination.page
-        this.filter.total = this.citizens_pagination.total
+        // this.filter.limit = this.applications_pagination.limit
+        // this.filter.page = this.applications_pagination.page
+        // this.filter.total = this.applications_pagination.total
       })
     },
     sendFilterRegion() {
@@ -347,7 +289,8 @@ export default {
       // }
     },
     indexMethod(index) {
-      return (this.citizens_pagination.page - 1) * 50 + index + 1
+      // return (this.applications_pagination.page - 1) * 50 + index + 1
+      return index + 1
     },
     deleteCitizen(id) {
       if (confirm(this.$t('Ҳақиқатан ҳам ушбу маълумотни ўчирмоқчимисиз?'))) {
@@ -389,6 +332,9 @@ export default {
         return arr
       }
       return []
+    },
+    handleClick(tab, event) {
+      console.log(tab, event);
     }
   }
 }

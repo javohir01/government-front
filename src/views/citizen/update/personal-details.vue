@@ -78,7 +78,7 @@
 <!--          </el-col>-->
           <el-col :span="6">
             <el-form-item :label="$t('Ижтимоий холати')" prop="city_id">
-              <el-select v-model="form.social_status.name" class="w-100" filterable>
+              <el-select v-model="form.social_status" class="w-100" filterable>
                 <el-option v-for="social_status in social_statuses" :key="social_status.id" :label="social_status.name" :value="form.social_id" />
               </el-select>
             </el-form-item>
@@ -120,9 +120,9 @@ export default {
     }
   },
   computed: {
-    // isNumberFull() {
-    //   return (this.form.passport.length >= 10)
-    // },
+    isNumberFull() {
+      return (this.form.passport.length >= 10)
+    },
     // isBirthDateFull() {
     //   return (this.form.birth_date.length >= 10)
     // },
@@ -136,11 +136,6 @@ export default {
   watch: {
     'form.passport'(newVal) {
       this.form.passport = newVal.toUpperCase()
-    },
-    isNumberFull(newVal, oldVal) {
-      if ((newVal && newVal !== oldVal) && this.delaying) {
-        this.getPassport()
-      }
     },
     'isBirthDateFull'(newVal, oldVal) {
       if ((newVal && newVal !== oldVal) && this.delaying) {
@@ -219,7 +214,10 @@ export default {
     },
     ...mapActions({
       setForm: 'citizen/setForm',
-      setMvdForm: 'citizen/setMvdForm'
+      setMvdForm: 'citizen/setMvdForm',
+      fetchSocialStatuses: 'citizen/socialStatuses',
+      getPassportAction: 'citizen/passport',
+
     })
   }
 }

@@ -8,7 +8,8 @@ import {
   regions,
   destroyCitizen,
   districts,
-  socialStatuses
+  socialStatuses,
+  getProviderByPassport
 } from '@/api/citizen'
 export const actions = {
   loadCitizen({ commit }, res) {
@@ -17,7 +18,7 @@ export const actions = {
   index({ commit }, query) {
     return new Promise((resolve, reject) => {
       index(query).then(res => {
-        console.log(res)
+        // console.log(res)
         commit('SET_CITIZENS', res.result.citizens)
         commit('SET_TOTAL_COUNT', res.result.citizens.total)
         resolve(res)
@@ -94,6 +95,18 @@ export const actions = {
         }).catch((res) => {
           reject(res)
         })
+    })
+  },
+  getCitizenByPassport({ commit }, query) {
+    if (query.passport.includes(' ')) {
+      query.passport = query.passport.replace(' ', '')
+    }
+    return new Promise((resolve, reject) => {
+      getProviderByPassport(query).then(res => {
+        resolve(res)
+      }).catch(error => {
+        reject(error)
+      })
     })
   },
   passport({ commit }, params) {

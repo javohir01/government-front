@@ -38,6 +38,6 @@ export const mutations = {
 }
 
 function getTotal(citizens) {
-  console.log(citizens)
+  // console.log(citizens)
   return citizens.current_page * citizens.per_page + 1
 }
