@@ -26,7 +26,7 @@
     <div v-loading="!loaded" class="bg-white box-shadow p-4">
       <template v-if="user.role_id === 3">
         <router-link :to="{name: 'ApplicationIndex', query: { type: $route.query.type } }">
-          <el-button type="success" class="float-left mb-4 font-weight-bold">{{ $t('Сўровлар') }}</el-button>
+          <el-button type="success" class="float-left mb-4 font-weight-bold">{{ $t('Аризалар') }}</el-button>
         </router-link>
       </template>
       <el-button type="success" class="float-right mb-4 font-weight-bold" icon="el-icon-download" :loading="isLoading" @click="exportToXlsx()">{{ $t('Юклаб олиш') }}</el-button>
@@ -215,11 +215,11 @@ export default {
       columns: [
         {
           label: this.$t('Ҳудуд'),
-          field: 'region'
+          field: 'scope.row.region.name_cyrl'
         },
         {
           label: this.$t('Туман(Шахар'),
-          field: 'district'
+          field: 'row.district.name_cyrl'
         },
         {
           label: this.$t('ФИО'),
@@ -239,11 +239,11 @@ export default {
         },
         {
           label: this.$t('туғилган куни'),
-          field: 'birth_date'
+          field: 'scope.row.birth_date'
         },
         {
           label: this.$t('Ижтимоий холати'),
-          field: 'social_status'
+          field: 'social_status.name'
         }
       ],
       fullPage: true,

@@ -10,20 +10,6 @@
       <el-divider content-position="left">{{ $t('Шахсий маълумотлар') }}</el-divider>
       <el-col :span="24">
         <el-row>
-          <el-col :span="8">
-            <el-form-item :label="$t('Паспорт')" prop="passport">
-              <el-input
-                ref="passport"
-                v-model="form.passport"
-                v-mask="'AA #######'"
-                v-loading="loading === 'passport'"
-                :value="form.passport"
-                :class="{ 'full-input': isNumberFull }"
-                suffix-icon="el-icon-check"
-                type="text"
-              />
-            </el-form-item>
-          </el-col>
           <el-col :span="form.is_bg ? 4 : 3">
             <el-form-item label="Паспорт" prop="passport">
               <template v-if="form.is_bg">
@@ -50,6 +36,7 @@
                   v-model="form.passport"
                   v-mask="'XX #######'"
                   placeholder="AA 0000000"
+                  :class="{ 'full-input': isNumberFull }"
                 />
               </template>
             </el-form-item>
@@ -63,14 +50,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item type="date" :label="$t('Туғилган куни')">
-              <el-input
-                ref="birth_date"
-                v-model="form.birth_date"
-                v-loading="loading === 'birth_date'"
-                v-mask="'##.##.####'"
-                placeholder="01.01.2019"
-              />
+            <el-form-item :label="$t(' ')">
+              <el-button type="primary" icon="el-icon-check" @click="getCitizen">{{ $t('Yuborish') }}</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -92,9 +73,25 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="8">
+          <el-col :span="6">
+            <el-form-item type="date" :label="$t('Туғилган куни')">
+              <el-input
+                ref="birth_date"
+                v-model="form.birth_date"
+                v-loading="loading === 'birth_date'"
+                v-mask="'##.##.####'"
+                placeholder="01.01.2019"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
             <el-form-item :label="$t('Манзили')">
               <el-input v-model="form.address" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item :label="$t('Телефон рақами')">
+              <el-input v-model="form.phone_number" />
             </el-form-item>
           </el-col>
           <el-col :span="4">
@@ -129,12 +126,24 @@ export default {
       loading: '',
       active: 0,
       rules: {
-        // passport: [
-        //   { required: true, message: this.$t('Паспорт киритилмаган'), trigger: 'change' }
-        // ],
-        // birth_date: [
-        //   { required: true, message: this.$t('Туғилган сана киритилмаган'), trigger: 'change' }
-        // ]
+        l_name: [
+          { required: true, message: 'Фамилияси киритилмаган', trigger: 'change' }
+        ],
+        f_name: [
+          { required: true, message: 'Исми киритилмаган', trigger: 'change' }
+        ],
+        m_name: [
+          { required: false, message: 'Отасининг исми киритилмаган', trigger: 'change' }
+        ],
+        pin: [
+          { required: true, message: 'ЖШШИР киритилмаган', trigger: 'change' }
+        ],
+        passport: [
+          { required: true, message: 'Паспорт киритилмаган', trigger: 'change' }
+        ],
+        birth_date: [
+          { required: true, message: 'Туғилган сана киритилмаган', trigger: 'change' }
+        ],
       },
       validated: true,
       birth_date_disabled: true
@@ -144,6 +153,9 @@ export default {
     ...mapGetters({
       social_statuses: 'citizen/GET_SOCIAL_STATUSES'
     }),
+    isPassportFull() {
+      return this.form.passport.length >= 10
+    },
     isNumberFull() {
       return (this.form.passport.length >= 10)
     },
@@ -163,14 +175,21 @@ export default {
     //   }
     // },
     isPassportFull(newVal, oldVal) {
-      if (!this.form.is_bg) {
-        if (newVal && newVal !== oldVal) {
-          if (this.delay) {
-            this.getCitizen()
-          }
-        } else {
-          this.clearForm()
+      // if (!this.form.is_bg) {
+      if (newVal && newVal !== oldVal) {
+        if (this.delay) {
+          this.getCitizen()
         }
+      } else {
+        this.clearForm()
+      }
+      // }
+    },
+    'form.region_id'(newVal, oldVal) {
+      if (newVal && newVal !== oldVal) {
+        this.fetchDistricts({ region_id: newVal }).then((res) => {
+          this.districts = res.result.districts
+        })
       }
     },
     'isBirthDateFull'(newVal, oldVal) {
@@ -201,7 +220,8 @@ export default {
       fetchSocialStatuses: 'citizen/socialStatuses',
       getPassportAction: 'citizen/passport',
       setForm: 'citizen/setForm',
-      setMvdForm: 'citizen/setMvdForm'
+      setMvdForm: 'citizen/setMvdForm',
+      getCitizenAction: 'citizen/getCitizenByPassport'
     }),
     concat() {
       this.form.passport = this.form.series + this.form.number
@@ -209,9 +229,9 @@ export default {
     getCitizen() {
       this.isPassportLoading = true
       const passport = this.form.passport.replace(' ', '')
-      this.getCitizenAction({ passport: passport, type: this.app_modul, check: 1 })
+      this.getCitizenAction({ passport: passport, pin: this.form.pin, type: this.app_modul, check: 1 })
         .then(res => {
-          if (res.success && res.result.citizen && res.result.citizen.sname) {
+          if (res.success && res.result.citizen && res.result.citizen.l_name) {
             this.setForm(res.result.citizen)
             this.is_disabled = true
           } else if (res.code === 'db') {
@@ -237,7 +257,7 @@ export default {
     getCitizenMVD() {
       this.isPassportLoading = true
       const passport = this.form.passport.replace(' ', '')
-      this.getCitizenAction({ passport: passport, birth_date: this.form.birth_date, type: this.app_modul, check: 1 })
+      this.getCitizenAction({ passport: passport, pin: this.form.pin, type: this.app_modul, check: 1 })
         .then(res => {
           if (res.success && res.result.citizen) {
             this.setFormMvd(res.result.citizen)
@@ -273,20 +293,18 @@ export default {
       this.form.birth_date = ''
     },
     setForm(citizen) {
-      this.form.f_name = citizen.sname
-      this.form.l_name = citizen.fname
-      this.form.m_name = citizen.lname
-      this.form.address = citizen.tin
+      this.form.f_name = citizen.f_name
+      this.form.l_name = citizen.l_name
+      this.form.m_name = citizen.m_name
       this.form.pin = citizen.pin
-      this.form.birth_date = citizen.date_birth
+      this.form.birth_date = citizen.birth_date
     },
     setFormMvd(citizen) {
-      this.form.f_name = citizen.pSurname
-      this.form.l_name = citizen.pName
-      this.form.m_name = citizen.pPatronym
-      this.form.address = null
-      this.form.pin = citizen.pPinpp
-      this.form.birth_date = citizen.date_birth
+      this.form.f_name = citizen.f_name
+      this.form.l_name = citizen.l_name
+      this.form.m_name = citizen.m_name
+      this.form.pin = citizen.pin
+      this.form.birth_date = citizen.birth_date
     }
   }
 }

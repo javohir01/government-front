@@ -60,8 +60,10 @@ export default {
         limit: 0,
         page: 0,
         total: 1,
-        full_name: '',
-      }
+        full_name: ''
+      },
+      delay: false
+
     }
   },
   computed: {
@@ -93,23 +95,6 @@ export default {
       this.form.number = ''
       this.form.address = ''
     },
-    // save() {
-    //   this.dialogVisible = true;
-    //   if (this.validate()) {
-    //     this.form.phone = this.phone
-    //     this.storeApplication({ data: this.form })
-    //         .then(res => {
-    //           if (res.success) {
-    //             this.id = this.form.id
-    //             this.$router.push({ name: 'ApplicationsShowCode', params: { id: res.result.citizen.id }})
-    //             Swal.fire({
-    //               title: this.$t('Маълумот сақланди!'),
-    //               type: 'success',
-    //               timer: 1500,
-    //               showConfirmButton: false,
-    //               confirmButtonText: 'Давом этиш'
-    //             })
-    //           }
     save() {
       this.form.phone_number = this.phone_number
       console.log(this.form)

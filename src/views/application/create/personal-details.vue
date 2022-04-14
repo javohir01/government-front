@@ -10,59 +10,48 @@
       <el-divider content-position="left">{{ $t('Шахсий маълумотлар') }}</el-divider>
       <el-col :span="24">
         <el-row>
+          <el-col :span="form.is_bg ? 4 : 3">
+            <el-form-item label="Паспорт" prop="passport">
+              <template v-if="form.is_bg">
+                <el-row>
+                  <el-col :span="8">
+                    <el-select v-model="form.series" @change="concat">
+                      <el-option label="БГ" value="БГ" />
+                      <el-option label="ИР" value="ИР" />
+                    </el-select>
+                  </el-col>
+                  <el-col :span="16">
+                    <el-input
+                      v-model="form.number"
+                      v-mask="'#######'"
+                      type="text"
+                      placeholder="0000000"
+                      @blur="concat"
+                    />
+                  </el-col>
+                </el-row>
+              </template>
+              <template v-else>
+                <el-input
+                  v-model="form.passport"
+                  v-mask="'XX #######'"
+                  placeholder="AA 0000000"
+                  :class="{ 'full-input': isNumberFull }"
+                />
+              </template>
+            </el-form-item>
+          </el-col>
           <el-col :span="8">
-            <el-form-item :label="$t('Паспорт')" prop="passport">
+            <el-form-item :label="$t('ЖШШИР')">
               <el-input
-                ref="passport"
-                v-model="form.passport"
-                v-mask="'AA #######'"
-                v-loading="loading === 'passport'"
-                :value="form.passport"
-                suffix-icon="el-icon-check"
-                type="text"
+                v-model="form.pin"
+                v-mask="'##############'"
               />
             </el-form-item>
           </el-col>
-<!--          <el-col :span="form.is_bg ? 4 : 3">-->
-<!--            <el-form-item label="Паспорт" prop="passport">-->
-<!--              <template v-if="form.is_bg">-->
-<!--                <el-row>-->
-<!--                  <el-col :span="8">-->
-<!--                    <el-select v-model="form.series" @change="concat">-->
-<!--                      <el-option label="БГ" value="БГ" />-->
-<!--                      <el-option label="ИР" value="ИР" />-->
-<!--                    </el-select>-->
-<!--                  </el-col>-->
-<!--                  <el-col :span="16">-->
-<!--                    <el-input-->
-<!--                      v-model="form.number"-->
-<!--                      v-mask="'#######'"-->
-<!--                      type="text"-->
-<!--                      placeholder="0000000"-->
-<!--                      @blur="concat"-->
-<!--                    />-->
-<!--                  </el-col>-->
-<!--                </el-row>-->
-<!--              </template>-->
-<!--              <template v-else>-->
-<!--                <el-input-->
-<!--                  v-model="form.passport"-->
-<!--                  v-eluppercase-->
-<!--                  v-mask-ru="'XX #######'"-->
-<!--                  placeholder="AA 0000000"-->
-<!--                />-->
-<!--              </template>-->
-<!--            </el-form-item>-->
-<!--          </el-col>-->
           <el-col :span="8">
-            <el-form-item type="date" :label="$t('Туғилган куни')">
-              <el-input
-                ref="birth_date"
-                v-model="form.birth_date"
-                v-loading="loading === 'birth_date'"
-                v-mask="'##.##.####'"
-                placeholder="01.01.2019"
-              />
+            <el-form-item :label="$t(' ')">
+              <el-button type="primary" icon="el-icon-check" @click="getCitizen">{{ $t('Yuborish') }}</el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -85,10 +74,13 @@
         </el-row>
         <el-row>
           <el-col :span="8">
-            <el-form-item :label="$t('ЖШШИР')">
+            <el-form-item type="date" :label="$t('Туғилган куни')">
               <el-input
-                v-model="form.pin"
-                v-mask="'##############'"
+                ref="birth_date"
+                v-model="form.birth_date"
+                v-loading="loading === 'birth_date'"
+                v-mask="'##.##.####'"
+                placeholder="01.01.2019"
               />
             </el-form-item>
           </el-col>
@@ -143,39 +135,27 @@ export default {
   },
   data() {
     return {
-      // eslint-disable-next-line vue/no-dupe-keys
-      // form: {
-      //   id: '',
-      //   passport: '',
-      //   l_name: '',
-      //   f_name: '',
-      //   m_name: '',
-      //   region_id: null,
-      //   district_id: null,
-      //   social_id: null,
-      //   address: '',
-      //   birth_date: '',
-      //   region: '',
-      //   phone_number: null,
-      //   district: '',
-      //   social_status: '',
-      //   social: '',
-      //   source: 1,
-      //   pin: '',
-      //   limit: 0,
-      //   page: 0,
-      //   total: 1,
-      //   full_name: ''
-      // },
       loading: '',
       active: 0,
       rules: {
-        // passport: [
-        //   { required: true, message: this.$t('Паспорт киритилмаган'), trigger: 'change' }
-        // ],
-        // birth_date: [
-        //   { required: true, message: this.$t('Туғилган сана киритилмаган'), trigger: 'change' }
-        // ]
+        l_name: [
+          { required: true, message: 'Фамилияси киритилмаган', trigger: 'change' }
+        ],
+        f_name: [
+          { required: true, message: 'Исми киритилмаган', trigger: 'change' }
+        ],
+        m_name: [
+          { required: false, message: 'Отасининг исми киритилмаган', trigger: 'change' }
+        ],
+        pin: [
+          { required: true, message: 'ЖШШИР киритилмаган', trigger: 'change' }
+        ],
+        passport: [
+          { required: true, message: 'Паспорт киритилмаган', trigger: 'change' }
+        ],
+        birth_date: [
+          { required: true, message: 'Туғилган сана киритилмаган', trigger: 'change' }
+        ],
       },
       validated: true,
       birth_date_disabled: true
@@ -248,12 +228,11 @@ export default {
     ...mapActions({
       fetchSocialStatuses: 'citizen/socialStatuses',
       getPassportAction: 'citizen/passport',
-      setForm: 'citizen/setForm',
+      setForm: 'application/setForm',
       setMvdForm: 'citizen/setMvdForm',
       fetchDistricts: 'citizen/districts',
       fetchRegions: 'citizen/regions',
-      getCitizenAction: 'citizen/getCitizenByPassport',
-
+      getCitizenAction: 'application/getCitizenByPassport'
     }),
     concat() {
       this.form.passport = this.form.series + this.form.number
@@ -266,9 +245,9 @@ export default {
     getCitizen() {
       this.isPassportLoading = true
       const passport = this.form.passport.replace(' ', '')
-      this.getCitizenAction({ passport: passport, type: this.app_modul, check: 1 })
+      this.getCitizenAction({ passport: passport, pin: this.form.pin, type: this.app_modul, check: 1 })
         .then(res => {
-          if (res.success && res.result.citizen && res.result.citizen.sname) {
+          if (res.success && res.result.citizen && res.result.citizen.l_name) {
             this.setForm(res.result.citizen)
             this.is_disabled = true
           } else if (res.code === 'db') {
@@ -328,6 +307,28 @@ export default {
         this.filter.district_id = null
       })
       // }
+    },
+    clearForm() {
+      this.form.f_name = ''
+      this.form.l_name = ''
+      this.form.m_name = ''
+      this.form.address = ''
+      this.form.pin = ''
+      this.form.birth_date = ''
+    },
+    setForm(citizen) {
+      this.form.f_name = citizen.f_name
+      this.form.l_name = citizen.l_name
+      this.form.m_name = citizen.m_name
+      this.form.pin = citizen.pin
+      this.form.birth_date = citizen.birth_date
+    },
+    setFormMvd(citizen) {
+      this.form.f_name = citizen.f_name
+      this.form.l_name = citizen.l_name
+      this.form.m_name = citizen.m_name
+      this.form.pin = citizen.pin
+      this.form.birth_date = citizen.birth_date
     }
   }
 }

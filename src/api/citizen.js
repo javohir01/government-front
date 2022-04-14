@@ -55,7 +55,7 @@ export function bulk(type, list) {
 }
 export function getProviderByPassport(query) {
   return request({
-    url: '/citizens/passport',
+    url: '/citizens/id-card',
     method: 'post',
     params: query
   })

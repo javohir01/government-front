@@ -1,4 +1,4 @@
-import {sendMessage, confirm, store, index, show, rejected, confirmed, getNumber, checkApplication } from '@/api/application'
+import {sendMessage, confirm, store, index, show, rejected, confirmed, getNumber, getProviderByPassport, checkApplication } from '@/api/application'
 
 export const actions = {
   index({ commit }, query) {
@@ -42,9 +42,20 @@ export const actions = {
     return new Promise((resolve, reject) => {
       confirmed(id)
         .then(res => {
-          commit('SET_PHONE_NUMBER', data.phone_number)
           resolve(res)
         }).catch((res) => { reject(res) })
+    })
+  },
+  getCitizenByPassport({ commit }, query) {
+    if (query.passport.includes(' ')) {
+      query.passport = query.passport.replace(' ', '')
+    }
+    return new Promise((resolve, reject) => {
+      getProviderByPassport(query).then(res => {
+        resolve(res)
+      }).catch(error => {
+        reject(error)
+      })
     })
   },
   setForm({ commit }, { form, application }) {

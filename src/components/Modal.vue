@@ -48,7 +48,7 @@
 
 <script>
 
-import { mapGetters } from 'vuex'
+import {mapActions, mapGetters} from 'vuex'
 
 export default {
   name: 'Modal',
@@ -61,7 +61,21 @@ export default {
   computed: {
     ...mapGetters({ check_details: 'application/GET_CHECK_DETAILS' })
   },
+  mounted() {
+    this.check_details()
+    this.fetchDistricts({ region_id: this.user.region_id })
+    this.fetchSocialStatuses()
+  },
   methods: {
+    ...mapActions({
+      // getNumber: 'application/getNumber',
+      storeApplication: 'application/store',
+      updateCitizen: 'citizen/update',
+      setForm: 'application/setForm',
+      fetchDistricts: 'citizen/districts',
+      fetchSocialStatuses: 'citizen/socialStatuses',
+      fetchRegions: 'citizen/regions'
+    }),
     close() {
       this.$emit('close')
     }

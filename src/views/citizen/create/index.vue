@@ -34,6 +34,7 @@ export default {
         f_name: '',
         m_name: '',
         birth_date: '',
+        phone_number: '',
         address: '',
         social_id: null,
         social: '',
@@ -42,10 +43,20 @@ export default {
       }
     }
   },
+  created() {
+    // if (this.$route.name === 'CitizensEdit') {
+    this.isLoading = true
+    this.getCitizen(this.$route.params.id).then((res) => {
+      this.setForm({ form: this.form, citizen: res.result.citizen })
+      this.isLoading = false
+    })
+    // }
+  },
   methods: {
     save() {
       if (this.validate()) {
         this.is_disable = true
+        console.log(this.form)
         this.storeCitizen({ data: this.form })
           .then(res => {
             if (res.success) {

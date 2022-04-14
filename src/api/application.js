@@ -67,3 +67,10 @@ export function checkApplication(data) {
     data
   })
 }
+export function getProviderByPassport(query) {
+  return request({
+    url: '/applications/id-card',
+    method: 'post',
+    params: query
+  })
+}

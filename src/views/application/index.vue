@@ -39,7 +39,7 @@
           :index="indexMethod"
           fixed
         />
-        <el-table-column label="" width="130" prop="region">
+        <el-table-column label="" width="200" prop="region">
           <template slot="header">
             <p>{{ $t('ФИО') }}</p>
             <input v-model="filter.full_name" class="form-control form-control-sm w-100">
@@ -50,37 +50,37 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="" width="130" prop="region">
-          <template slot="header">
-            <p>{{ $t('Ҳудуд') }}</p>
-            <select v-model="filter.region_id" class="w-100" style="height: 28px" @change="sendFilter">
-              <option :value="null">{{ $t('Барчаси') }}</option>
-              <template>
-                <option v-for="region in regions" :value="region.id" @keyup="sendFilter">{{ region.name_cyrl }}</option>
-              </template>
-            </select>
-          </template>
-          <template slot-scope="scope">
-            <p>{{ (scope.row.region && scope.row.region.name_cyrl) ? scope.row.region.name_cyrl: '---' }}</p>
-            {{filter.region}}
-          </template>
-        </el-table-column>
-        <el-table-column width="140" prop="city">
-          <template slot="header">
-            <p>{{ $t('Туман(Шахар)') }}</p>
-            <select v-model="filter.district_id" class="w-100" style="height: 28px" @change="sendFilter">
-              <option :value="null">{{ $t('Барчаси') }}</option>
-              <template >
-                <option v-for="district in districts" :value="district.id" @keyup="sendFilter">{{ district.name_cyrl }}</option>
-              </template>
-            </select>
-          </template>
-          <template slot-scope="scope" >
-            <p>{{ (scope.row.district && scope.row.district.name_cyrl) ? scope.row.district.name_cyrl: '---' }}</p>
-            {{filter.district}}
-          </template>
-        </el-table-column>
-        <el-table-column width="230" prop="city">
+<!--        <el-table-column label="" width="130" prop="region">-->
+<!--          <template slot="header">-->
+<!--            <p>{{ $t('Ҳудуд') }}</p>-->
+<!--            <select v-model="filter.region_id" class="w-100" style="height: 28px" @change="sendFilter">-->
+<!--              <option :value="null">{{ $t('Барчаси') }}</option>-->
+<!--              <template>-->
+<!--                <option v-for="region in regions" :value="region.id" @keyup="sendFilter">{{ region.name_cyrl }}</option>-->
+<!--              </template>-->
+<!--            </select>-->
+<!--          </template>-->
+<!--          <template slot-scope="scope">-->
+<!--            <p>{{ (scope.row.region && scope.row.region.name_cyrl) ? scope.row.region.name_cyrl: '-&#45;&#45;' }}</p>-->
+<!--            {{filter.region}}-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+<!--        <el-table-column width="140" prop="city">-->
+<!--          <template slot="header">-->
+<!--            <p>{{ $t('Туман(Шахар)') }}</p>-->
+<!--            <select v-model="filter.district_id" class="w-100" style="height: 28px" @change="sendFilter">-->
+<!--              <option :value="null">{{ $t('Барчаси') }}</option>-->
+<!--              <template >-->
+<!--                <option v-for="district in districts" :value="district.id" @keyup="sendFilter">{{ district.name_cyrl }}</option>-->
+<!--              </template>-->
+<!--            </select>-->
+<!--          </template>-->
+<!--          <template slot-scope="scope" >-->
+<!--            <p>{{ (scope.row.district && scope.row.district.name_cyrl) ? scope.row.district.name_cyrl: '-&#45;&#45;' }}</p>-->
+<!--            {{filter.district}}-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+        <el-table-column width="310" prop="social_status">
           <template slot="header">
             <p>{{ $t('Ижтимоий холати') }}</p>
             <select v-model="filter.social_id" class="w-250" style="height: 28px" @change="sendFilter">
@@ -104,7 +104,7 @@
             {{ scope.row.address }}
           </template>
         </el-table-column>
-        <el-table-column width="120">
+        <el-table-column width="130">
           <template slot="header">
             <p>{{ $t('Телефон рақами') }}</p>
             <input v-model="filter.phone_number" type="text" class="w-100">
@@ -113,7 +113,7 @@
             {{ scope.row.phone_number }}
           </template>
         </el-table-column>
-        <el-table-column width="110">
+        <el-table-column width="150">
           <template slot="header">
             <p>{{ $t('туғилган куни') }}</p>
             <input v-model="filter.birth_date" type="text" class="w-100">
@@ -124,14 +124,14 @@
         </el-table-column>
         <el-table-column
           prop="passport"
-          width="100"
+          width="140"
         >
           <template slot="header">
             <p>{{ $t('Паспорт') }}</p>
             <input v-model="filter.passport" class="form-control form-control-sm w-100">
           </template>
         </el-table-column>
-        <el-table-column width="120">
+        <el-table-column width="150">
           <template slot="header">
             <p>{{ $t('ЖШШИР') }}</p>
             <input v-model="filter.pin" class="form-control form-control-sm w-100">
