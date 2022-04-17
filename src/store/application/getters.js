@@ -7,5 +7,6 @@ export const getters = {
   GET_SOCIAL_STATUSES: (state) => state.social_statuses,
   GET_DISTRICTS: (state) => state.districts,
   GET_PHONE_NUMBER: (state) => state.phone_number,
-  GET_CHECK_DETAILS: (state) => state.check_details
+  GET_CHECK_DETAILS: (state) => state.check_details,
+  GET_DENY_REASONS: (state) => state.deny_reasons
 }

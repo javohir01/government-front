@@ -18,9 +18,9 @@ export const actions = {
   index({ commit }, query) {
     return new Promise((resolve, reject) => {
       index(query).then(res => {
-        // console.log(res)
         commit('SET_CITIZENS', res.result.citizens)
         commit('SET_TOTAL_COUNT', res.result.citizens.total)
+        commit('SET_QUERY', query)
         resolve(res)
       }).catch(error => {
         reject(error)
@@ -37,7 +37,6 @@ export const actions = {
       })
     })
   },
-  // eslint-disable-next-line no-empty-pattern
   indexFull({}, query) {
     return new Promise((resolve, reject) => {
       index(query).then(res => {
@@ -164,6 +163,7 @@ export const actions = {
       form.f_name = citizen.f_name
       form.m_name = citizen.m_name
       form.address = citizen.address
+      form.phone_number = citizen.phone_number
       form.source = 1
       form.pin = citizen.pin
       form.social_id = citizen.social_id

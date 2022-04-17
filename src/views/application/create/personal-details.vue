@@ -8,9 +8,9 @@
   >
     <el-row>
       <el-divider content-position="left">{{ $t('Шахсий маълумотлар') }}</el-divider>
-      <el-col :span="24">
+      <el-col>
         <el-row>
-          <el-col :span="form.is_bg ? 4 : 3">
+          <el-col :span="form.is_bg ? 8 : 8">
             <el-form-item label="Паспорт" prop="passport">
               <template v-if="form.is_bg">
                 <el-row>
@@ -20,12 +20,13 @@
                       <el-option label="ИР" value="ИР" />
                     </el-select>
                   </el-col>
-                  <el-col :span="16">
+                    <el-col :span="16">
                     <el-input
                       v-model="form.number"
                       v-mask="'#######'"
                       type="text"
                       placeholder="0000000"
+                      filterable
                       @blur="concat"
                     />
                   </el-col>
@@ -36,56 +37,60 @@
                   v-model="form.passport"
                   v-mask="'XX #######'"
                   placeholder="AA 0000000"
-                  :class="{ 'full-input': isNumberFull }"
+                  :class="{ 'full-input': isPassportFull }"
                 />
               </template>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item :label="$t('ЖШШИР')">
+            <el-form-item :label="$t('ЖШШИР')" prop="pin">
               <el-input
                 v-model="form.pin"
                 v-mask="'##############'"
+                :class="{ 'full-input': isPinFull }"
+                suffix-icon="el-icon-check"
+                @keyup.enter.native="getCitizen"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item :label="$t(' ')">
-              <el-button type="primary" icon="el-icon-check" @click="getCitizen">{{ $t('Yuborish') }}</el-button>
+              <el-button class="" type="primary" icon="el-icon-check" :disabled="is_disabled" @click="getCitizen">{{ $t('Qidirish') }}</el-button>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
+        <el-row v-if="show">
           <el-col :span="8">
-            <el-form-item :label="$t('Фамилия')">
-              <el-input v-model="form.l_name" />
+            <el-form-item :label="$t('Фамилия')" prop="l_name">
+              <el-input v-model="form.l_name" :disabled="is_disabled" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item :label="$t('Исм')">
-              <el-input v-model="form.f_name" />
+            <el-form-item :label="$t('Исм')" prop="f_name">
+              <el-input v-model="form.f_name" :disabled="is_disabled"/>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item :label="$t('Отасининг исми')">
-              <el-input v-model="form.m_name" />
+            <el-form-item :label="$t('Отасининг исми')" prop="m_name">
+              <el-input v-model="form.m_name" :disabled="is_disabled"/>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
+        <el-row  v-if="show">
           <el-col :span="8">
-            <el-form-item type="date" :label="$t('Туғилган куни')">
+            <el-form-item type="date" :label="$t('Туғилган куни')" prop="birth_date">
               <el-input
                 ref="birth_date"
                 v-model="form.birth_date"
                 v-loading="loading === 'birth_date'"
                 v-mask="'##.##.####'"
                 placeholder="01.01.2019"
+                :disabled="is_disabled"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item :label="$t('Ҳудуд')">
+            <el-form-item :label="$t('Ҳудуд')" prop="region_id">
               <el-select v-model="form.region_id" class="w-100" filterable value="region.id">
                 <!--                <option :value="null">{{ $t('Барчаси') }}</option>-->
                 <el-option v-for="region in regions" :key="region.id" :value="region.id" :label="region.name_cyrl" />
@@ -93,21 +98,21 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item :label="$t('Туман(Шахар)')">
+            <el-form-item :label="$t('Туман(Шахар)')" prop="district_id">
               <el-select v-model="form.district_id" class="w-100" style="height: 28px">
                 <el-option v-for="district in districts" :key="district.id" :value="district.id" :label="district.name_cyrl" />
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
+        <el-row  v-if="show">
           <el-col :span="8">
-            <el-form-item :label="$t('Манзили')">
+            <el-form-item :label="$t('Манзили'+ phone_number)" prop="address">
               <el-input v-model="form.address" />
             </el-form-item>
           </el-col>
-          <el-col :span="4">
-            <el-form-item :label="$t('Ижтимоий холати')" prop="social_status.id">
+          <el-col :span="8">
+            <el-form-item :label="$t('Ижтимоий холати')" prop="social_id">
               <el-select v-model="form.social_id" class="w-100" filterable value="social_status.id">
                 <el-option v-for="social_status in social_statuses" :key="social_status.id" :label="social_status.name" :value="social_status.id" />
               </el-select>
@@ -124,7 +129,7 @@ import { mapActions, mapGetters } from 'vuex'
 import Swal from 'sweetalert2'
 
 export default {
-  name: 'PersonalDetial',
+  name: 'PersonalDetail',
   props: {
     form: {
       type: Object,
@@ -135,36 +140,47 @@ export default {
   },
   data() {
     return {
+      is_disabled: false,
       loading: '',
+      isPassportLoading: false,
+      show: false,
       active: 0,
       rules: {
-        l_name: [
-          { required: true, message: 'Фамилияси киритилмаган', trigger: 'change' }
-        ],
-        f_name: [
-          { required: true, message: 'Исми киритилмаган', trigger: 'change' }
-        ],
-        m_name: [
-          { required: false, message: 'Отасининг исми киритилмаган', trigger: 'change' }
-        ],
         pin: [
           { required: true, message: 'ЖШШИР киритилмаган', trigger: 'change' }
         ],
         passport: [
           { required: true, message: 'Паспорт киритилмаган', trigger: 'change' }
         ],
-        birth_date: [
-          { required: true, message: 'Туғилган сана киритилмаган', trigger: 'change' }
+        address: [
+          { required: true, message: 'Манзил киритилмаган', trigger: 'change' }
         ],
+        district_id: [
+          { required: true, message: 'Туман(Шахар) киритилмаган', trigger: 'change' }
+        ],
+        region_id: [
+          { required: true, message: 'Ҳудуд киритилмаган', trigger: 'change' }
+        ],
+        social_id: [
+          { required: true, message: 'Ижтимоий холати киритилмаган', trigger: 'change' }
+        ]
       },
-      validated: true,
+      validated: false,
       birth_date_disabled: true
     }
   },
   computed: {
     ...mapGetters({
-      social_statuses: 'citizen/GET_SOCIAL_STATUSES', regions: 'citizen/GET_REGIONS', districts: 'citizen/GET_DISTRICTS'
+      social_statuses: 'citizen/GET_SOCIAL_STATUSES', regions: 'citizen/GET_REGIONS', districts: 'citizen/GET_DISTRICTS', phone_number: 'application/GET_PHONE_NUMBER'
     }),
+    isPassportFull() {
+      // console.log(this.form.passport)
+      return this.form.passport.length >= 9
+    },
+    isPinFull() {
+      this.is_disabled = false
+      return this.form.pin.length >= 14
+    },
     isNumberFull() {
       return (this.form.passport.length >= 10)
     },
@@ -176,7 +192,52 @@ export default {
     }
   },
   watch: {
+    watch: {
+      isPassportFull(newVal, oldVal) {
+        console.log(newVal)
+        if (newVal && newVal !== oldVal) {
+          this.$refs.pin.focus()
+        } else {
+          this.clearForm()
+        }
+      },
+      // 'isPassportFull'(newVal, oldVal) {
+      //   if (newVal && newVal !== oldVal) {
+      //     if (this.passport) {
+      //       setTimeout(() => {
+      //         this.$refs.pin.focusPin()
+      //       }, 10)
+      //     }
+      //   }
+      // },
+      'isBirthDateFull'(newVal, oldVal) {
+        if (newVal && newVal !== oldVal) {
+          if (this.isBirthDateTrue) {
+            setTimeout(() => {
+              this.$refs.phoneForm.focusPhone()
+            }, 10)
+          }
+        }
+      },
+      'form.passport'(newVal) {
+        const a = newVal.slice(0, 2)
+        if (a.match(/[0-9]+/)) {
+          this.form.passport = this.form.passport.slice(2, this.form.passport.length)
+        }
+      }
+    },
     isPassportFull(newVal, oldVal) {
+      if (!this.form.is_bg) {
+        if (newVal && newVal !== oldVal) {
+          if (this.delay) {
+            this.getCitizen()
+          }
+        } else {
+          this.clearForm()
+        }
+      }
+    },
+    isPinFull(newVal, oldVal) {
       if (!this.form.is_bg) {
         if (newVal && newVal !== oldVal) {
           if (this.delay) {
@@ -212,18 +273,10 @@ export default {
   mounted() {
     this.fetchSocialStatuses()
     this.fetchRegions()
-    // if (this.user.role_id !== 10) {
-    //   this.fetchRegions().then((res) => {
-    //     this.sendFilter()
-    //   })
-    // } else {
-    //   this.fetchDistricts({ region_id: this.form.region_id }).then((res) => {
-    //     this.sendFilter()
-    //   })
-    // }
+
     this.fetchDistricts({ region_id: this.form.region_id })
-    this.fetchSocialStatuses()
   },
+
   methods: {
     ...mapActions({
       fetchSocialStatuses: 'citizen/socialStatuses',
@@ -234,6 +287,9 @@ export default {
       fetchRegions: 'citizen/regions',
       getCitizenAction: 'application/getCitizenByPassport'
     }),
+    focusPassport() {
+      this.$refs.pin.focus()
+    },
     concat() {
       this.form.passport = this.form.series + this.form.number
     },
@@ -241,28 +297,32 @@ export default {
       this.$refs['personal-form'].validate((valid) => {
         this.validated = valid
       })
+      return this.validated
     },
     getCitizen() {
       this.isPassportLoading = true
       const passport = this.form.passport.replace(' ', '')
+      this.isPassportLoading = true
       this.getCitizenAction({ passport: passport, pin: this.form.pin, type: this.app_modul, check: 1 })
         .then(res => {
           if (res.success && res.result.citizen && res.result.citizen.l_name) {
             this.setForm(res.result.citizen)
             this.is_disabled = true
-          } else if (res.code === 'db') {
-            Swal.fire({
-              title: typeof res.msg === 'string' ? res.msg : 'Фуқаро топилмади!',
-              type: 'error',
-              timer: 3000,
-              showConfirmButton: false,
-              confirmButtonText: 'Давом этиш'
-            })
-          } else {
-            this.source = 2
+            this.show = true
+          }
+          // else if (res.code === 'db') {
+          //   Swal.fire({
+          //     title: typeof res.msg === 'string' ? res.msg : 'Фуқаро топилмади!',
+          //     type: 'error',
+          //     timer: 3000,
+          //     showConfirmButton: false,
+          //     confirmButtonText: 'Давом этиш'
+          //   })
+          // }
+          else {
             this.$message({
-              type: 'warning',
-              message: 'Туғилган санани киритинг',
+              type: 'alert',
+              message: 'Сиз аввал ариза жўнатгансиз ' + ' Ариза ҳолатини ' + 'ID: ' + res.result['0'].number + ' va Code: ' + res.result['0'].code + ' орқали текширинг ',
               duration: 5000
             })
           }

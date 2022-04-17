@@ -35,6 +35,7 @@ export default {
         birth_date: '',
         social_id: null,
         source: 1,
+        phone_number: '',
         pin: '',
         new_passport: '',
         type: this.$route.query.type,
@@ -63,7 +64,7 @@ export default {
               confirmButtonText: 'Давом этиш'
             })
               .then(() => {
-                this.$router.push({ name: 'CitizensIndex', query: { type: this.$route.query.type } })
+                this.$router.push({ name: 'CitizensIndex', query: { type: this.$route.query.type }})
               })
           } else if (res.error === 'Bu ma\'lumotlar bazada mavjud') {
             this.is_disable = false

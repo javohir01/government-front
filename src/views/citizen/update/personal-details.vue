@@ -20,6 +20,16 @@
                 :class="{ 'full-input': isNumberFull }"
                 suffix-icon="el-icon-check"
                 type="text"
+                :disabled="is_disabled"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item :label="$t('ЖШШИР')">
+              <el-input
+                v-model="form.pin"
+                v-mask="'##############'"
+                :disabled="is_disabled"
               />
             </el-form-item>
           </el-col>
@@ -31,6 +41,7 @@
                 v-model="form.birth_date"
                 v-mask="'##.##.####'"
                 placeholder="01.01.2019"
+                :disabled="is_disabled"
               />
             </el-form-item>
           </el-col>
@@ -38,32 +49,29 @@
         <el-row>
           <el-col :span="8">
             <el-form-item :label="$t('Фамилия')">
-              <el-input v-model="form.l_name" />
+              <el-input v-model="form.l_name" :disabled="is_disabled" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item :label="$t('Исм')">
-              <el-input v-model="form.f_name" />
+              <el-input v-model="form.f_name" :disabled="is_disabled" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item :label="$t('Отасининг исми')">
-              <el-input v-model="form.m_name" />
+              <el-input v-model="form.m_name" :disabled="is_disabled" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="8">
-            <el-form-item :label="$t('ЖШШИР')">
-              <el-input
-                v-model="form.pin"
-                v-mask="'##############'"
-              />
+            <el-form-item :label="$t('Манзили')">
+              <el-input v-model="form.address" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item :label="$t('Манзили')">
-              <el-input v-model="form.address" />
+            <el-form-item :label="$t('Телефон рақами')">
+              <el-input v-model="form.phone_number" />
             </el-form-item>
           </el-col>
 <!--          <el-col :span="6">-->
@@ -90,7 +98,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'PersonalDetial',
@@ -106,6 +114,7 @@ export default {
     return {
       loading: '',
       active: 0,
+      is_disabled: true,
       rules: {
         passport: [
           { required: true, message: this.$t('Паспорт киритилмаган'), trigger: 'change' }

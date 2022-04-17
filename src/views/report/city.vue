@@ -19,7 +19,7 @@
           <tr>
             <th> {{ $t('Т/р') }}</th>
             <th> {{ $t('Ҳудудлар') }}</th>
-<!--            <th> {{ $t('Жами аҳоли сони') }}</th>-->
+            <th> {{ $t('Жами аҳоли сони') }}</th>
             <th v-for="social_status in social_statuses">{{ social_status.name }}</th>
           </tr>
         </thead>
@@ -51,7 +51,7 @@
             <tr v-for="(social, index) in districts_report" :key="index">
               <td>{{ index + 1 }}</td>
               <td>{{ social.district_name }}</td>
-  <!--            <td> {{ social.region_count }}</td>-->
+              <td> {{ social.socials }}</td>
               <td> {{ social.social1 }}</td>
               <td> {{ social.social2 }}</td>
               <td> {{ social.social3 }}</td>

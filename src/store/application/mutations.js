@@ -19,9 +19,9 @@ export const mutations = {
     state.application.address = application.address
     state.application.social_status = application.social_status
   },
-  SET_CHECK_DETAILS: (state, check_details) => {
-    state.number = check_details.number
-    state.code = check_details.code
+  SET_CHECK_DETAILS: (state, Application) => {
+    state.check_details.number = Application.number
+    state.check_details.code = Application.code
   },
   SET_APPLICATIONS: (state, applications) => {
     state.applications.data = applications.data
@@ -42,6 +42,9 @@ export const mutations = {
   },
   SET_SOCIAL_STATUSES: (state, social_statuses) => {
     state.social_statuses = social_statuses
+  },
+  SET_DENY_REASONS: (state, deny_reasons) => {
+    state.deny_reasons = deny_reasons
   },
   SET_TOTAL_COUNT: (state, count) => {
     state.total = count

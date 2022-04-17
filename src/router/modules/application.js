@@ -19,6 +19,13 @@ const applicationsRouter = [
     component: () => import('@/views/application/Check'),
     // meta: { title: 'Изменить', noCache: true, activeMenu: 'applications' },
     hidden: true
+  },
+  {
+    name: 'ApplicationsShow',
+    path: 'applications/show',
+    component: () => import('@/views/application/show'),
+    // meta: { title: 'Изменить', noCache: true, activeMenu: 'applications' },
+    hidden: true
   }
 ]
 

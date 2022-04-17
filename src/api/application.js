@@ -38,18 +38,17 @@ export function show(id) {
   })
 }
 
-export function rejected(id) {
+export function rejected(data) {
   return request({
-    url: '/applications/rejected/' + id,
-    method: 'put'
-    // data: data
+    url: '/applications/rejected',
+    method: 'post',
+    data: data
   })
 }
 export function confirmed(id) {
   return request({
     url: '/applications/confirmed/' + id,
     method: 'put'
-    // data: data
   })
 }
 export function updatePhone(data) {
@@ -71,6 +70,35 @@ export function getProviderByPassport(query) {
   return request({
     url: '/applications/id-card',
     method: 'post',
+    params: query
+  })
+}
+export function regions(query) {
+  return request({
+    url: '/resources/regions',
+    method: 'get',
+    params: query
+  })
+}
+export function districts(query) {
+  return request({
+    url: '/resources/districts',
+    method: 'get',
+    params: query
+  })
+}
+
+export function socialStatuses(query) {
+  return request({
+    url: '/resources/socialStatuses',
+    method: 'get',
+    params: query
+  })
+}
+export function denyReasons(query) {
+  return request({
+    url: '/resources/denyReasons',
+    method: 'get',
     params: query
   })
 }

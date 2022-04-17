@@ -17,7 +17,7 @@ export const mutations = {
   SET_CITIZENS: (state, citizens) => {
     state.citizens.data = citizens.data
     state.citizens.pagination = {
-      total: citizens.total !== -1 ? citizens.total : getTotal(citizens),
+      total: citizens.total != -1 ? citizens.total : getTotal(citizens),
       page: citizens.current_page,
       limit: citizens.per_page
     }
@@ -38,6 +38,5 @@ export const mutations = {
 }
 
 function getTotal(citizens) {
-  // console.log(citizens)
   return citizens.current_page * citizens.per_page + 1
 }

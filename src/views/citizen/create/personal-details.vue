@@ -10,7 +10,7 @@
       <el-divider content-position="left">{{ $t('Шахсий маълумотлар') }}</el-divider>
       <el-col :span="24">
         <el-row>
-          <el-col :span="form.is_bg ? 4 : 3">
+          <el-col :span="8">
             <el-form-item label="Паспорт" prop="passport">
               <template v-if="form.is_bg">
                 <el-row>
@@ -42,33 +42,34 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item :label="$t('ЖШШИР')">
+            <el-form-item :label="$t('ЖШШИР')" :disabled="is_disabled">
               <el-input
                 v-model="form.pin"
                 v-mask="'##############'"
+                @keyup.enter.native="getCitizen"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item :label="$t(' ')">
-              <el-button type="primary" icon="el-icon-check" @click="getCitizen">{{ $t('Yuborish') }}</el-button>
+              <el-button type="primary" icon="el-icon-check" :disabled="is_disabled" @click="getCitizen">{{ $t('Qidirish') }}</el-button>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="8">
             <el-form-item :label="$t('Фамилия')">
-              <el-input v-model="form.l_name" />
+              <el-input v-model="form.l_name" :disabled="is_disabled" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item :label="$t('Исм')">
-              <el-input v-model="form.f_name" />
+              <el-input v-model="form.f_name" :disabled="is_disabled" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item :label="$t('Отасининг исми')">
-              <el-input v-model="form.m_name" />
+              <el-input v-model="form.m_name" :disabled="is_disabled" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -81,6 +82,7 @@
                 v-loading="loading === 'birth_date'"
                 v-mask="'##.##.####'"
                 placeholder="01.01.2019"
+                :disabled="is_disabled"
               />
             </el-form-item>
           </el-col>
@@ -94,7 +96,7 @@
               <el-input v-model="form.phone_number" />
             </el-form-item>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="6">
             <el-form-item :label="$t('Ижтимоий холати')" prop="city_id">
               <el-select v-model="form.social_id" class="w-100" filterable>
                 <el-option v-for="social_status in social_statuses" :key="social_status.id" :label="social_status.name" :value="social_status.id" />
@@ -125,6 +127,7 @@ export default {
     return {
       loading: '',
       active: 0,
+      is_disabled: false,
       rules: {
         l_name: [
           { required: true, message: 'Фамилияси киритилмаган', trigger: 'change' }

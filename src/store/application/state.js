@@ -13,6 +13,8 @@ export const state = {
     district: {},
     social_id: '',
     social_status: {},
+    deny_reason_id: '',
+    deny_reason: {},
     status: '',
     number: '',
     phone_number: '',
@@ -31,5 +33,6 @@ export const state = {
   regions: [],
   districts: [],
   social_statuses: [],
+  deny_reasons: [],
   total: 0
 }

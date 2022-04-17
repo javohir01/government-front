@@ -24,6 +24,7 @@ export default {
   data() {
     return {
       loading: true,
+      is_disabled: false,
       is_disable: false,
       form: {
         id: '',

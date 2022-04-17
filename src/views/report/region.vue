@@ -30,6 +30,18 @@
           </template>
         </el-table-column>
       </el-table>
+
+<!--      <table v-loading="isLoading" class="table table-hover table-bordered">-->
+<!--        <thead>-->
+<!--          <tr>-->
+<!--            <th> {{ $t('№') }}</th>-->
+<!--            <th> {{ $t('Ҳудудлар') }}</th>-->
+<!--            <th> {{ $t('Жами аҳоли сони') }}</th>-->
+<!--            <th v-for="social_status in social_statuses">{{ social_status.name }}</th>-->
+<!--          </tr>-->
+<!--        </thead>-->
+<!--&lt;!&ndash;        <tbody>&ndash;&gt;-->
+<!--&lt;!&ndash;        </tbody>&ndash;&gt;-->
     </div>
   </div>
 </template>

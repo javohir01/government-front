@@ -11,20 +11,10 @@
     <h4 class="font-weight-bold">{{ title }}</h4>
     <div v-loading="!loaded" class="bg-white box-shadow p-4">
       <el-button type="success" class="float-right mb-4 font-weight-bold" icon="el-icon-download" :loading="isLoading" @click="exportToXlsx()">{{ $t('Юклаб олиш') }}</el-button>
-<!--      <template v-if="user.role_id === 3">-->
-<!--        <router-link :to="{name: 'CitizensCreate', query: { type: $route.query.type } }">-->
-<!--          <el-button type="success" class="float-right mb-4 font-weight-bold" icon="el-icon-plus">{{ $t('Aъзо қўшиш') }}</el-button>-->
-<!--        </router-link>-->
-<!--      </template>-->
-<!--      <el-tabs type="border-card" v-model="filter.status" @tab-click="handleClick">-->
-<!--        <el-tab-pane label="User" name="first" v-if="status === 1">   </el-tab-pane>-->
-<!--        <el-tab-pane label="Config" name="second">Tasdiqlangan</el-tab-pane>-->
-<!--        <el-tab-pane label="Role" name="third">Rad etilgan</el-tab-pane>-->
-<!--      </el-tabs>-->
       <el-radio-group v-model="filter.status" style="margin-bottom: 30px;" @change="sendFilter">
-        <el-radio-button value="1" label="1">Yangi</el-radio-button>
-        <el-radio-button value="2" label="2">Tasdiqlangan</el-radio-button>
-        <el-radio-button value="3" label="3">Rad etilgan</el-radio-button>
+        <el-radio-button value="0" label="0">Yangi</el-radio-button>
+        <el-radio-button value="1" label="1">Tasdiqlangan</el-radio-button>
+        <el-radio-button value="2" label="2">Rad etilgan</el-radio-button>
       </el-radio-group>
       <el-table
         v-if="loaded"
@@ -147,21 +137,62 @@
             <el-button class="mt-3" type="primary" size="mini" @click="sendFilter()">{{ $t('Қидириш') }}</el-button>
           </template>
           <template slot-scope="scope">
-            <el-button v-if="scope.row.status === 1" size="mini" type="info" @click="confirmApplication(scope.row.id)">{{ $t('Тасдиқлаш') }}</el-button>
-            <el-button v-if="scope.row.status === 1" size="mini" class="m-1" type="danger" @click="rejectApplication(scope.row.id)">{{ $t('Рад етиш') }}</el-button>
+            <el-button v-if="scope.row.status === 0" size="mini" type="info" @click="confirmApplication(scope.row.id)">{{ $t('Тасдиқлаш') }}</el-button>
+            <el-button v-if="scope.row.status === 0" size="mini" class="m-1" type="danger" @click="showDialog(scope.row.id)">{{ $t('Рад етиш') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
-<!--      <el-pagination-->
-<!--        background-->
-<!--        :total="filter.total"-->
-<!--        :page-size="1 * filter.limit"-->
-<!--        layout="prev, pager, next"-->
-<!--        class="mt-3"-->
-<!--        @size-change="handleSizeChange"-->
-<!--        @current-change="handleCurrentChange"-->
-<!--      />-->
+      <el-pagination
+        background
+        :total="filter.total"
+        :page-size="1 * filter.limit"
+        layout="prev, pager, next"
+        class="mt-3"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
+    <el-dialog
+      title="Илтимос рад етиш сабабини танланг"
+      :visible.sync="warningDialog"
+      width="20%"
+      center
+    >
+      <section
+        class="modal-body"
+        id="modalDescription"
+      >
+        <slot name="body">
+          <el-form
+            ref="personal-form"
+            label-position="top"
+            class="top-label-custom"
+            :rules="rules"
+            :model="form"
+          >
+            <el-form-item :label="$t('Сабаблар')" prop="social_id">
+              <template>
+                <el-select v-model="form.deny_reason_id" class="w-100" filterable value="social_status.id">
+                  <el-option v-for="deny_reason in deny_reasons" :key="deny_reason.id" :label="deny_reason.name" :value="deny_reason.id" />
+                </el-select>
+              </template>
+            </el-form-item>
+            <el-form-item :label="$t('Сабаблар')" prop="social_id">
+              <el-input
+                type="textarea"
+                :rows="2"
+                placeholder="Изоҳ ёзиб қолдиринг"
+                v-model="form.deny_reason_comment">
+              </el-input>
+            </el-form-item>
+          </el-form>
+        </slot>
+      </section>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="warningDialog = false">Бекор қилиш</el-button>
+        <el-button type="primary" @click="rejectApplication(form)">Ок</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -175,8 +206,17 @@ export default {
   name: 'ApplicationIndex',
   data() {
     return {
+      rejectedApp: '',
       tabPosition: 'left',
       activeName: 'first',
+      isModalVisible: false,
+      warningDialog: false,
+      form: {
+        id: '',
+        deny_reason: '',
+        deny_reason_id: '',
+        deny_reason_comment: ''
+      },
       filter: {
         l_name: '',
         f_name: '',
@@ -199,11 +239,16 @@ export default {
       status: 1,
       loaded: false,
       fullPage: true,
-      isLoading: false
+      isLoading: false,
+      rules: {
+        deny_reason_id: [
+          { required: true, message: 'Сабаблардан бирини танланг', trigger: 'change' }
+        ]
+      }
     }
   },
   computed: {
-    ...mapGetters({ applications: 'application/GET_APPLICATIONS', applications_pagination: 'application/GET_APPLICATIONS_PAGINATION',
+    ...mapGetters({ applications: 'application/GET_APPLICATIONS', applications_pagination: 'application/GET_APPLICATIONS_PAGINATION', deny_reasons: 'application/GET_DENY_REASONS',
       user: 'auth/USER', full_name: 'application/FULL_NAME', regions: 'citizen/GET_REGIONS', districts: 'citizen/GET_DISTRICTS', social_statuses: 'citizen/GET_SOCIAL_STATUSES' }),
     title() {
       return this.$t('Аризалар рўйхати')
@@ -235,27 +280,32 @@ export default {
         this.sendFilter()
       })
     }
+    this.fetchDenyReasons()
   },
   methods: {
-    ...mapActions({ fetchApplications: 'application/index',
-      fetchDistricts: 'citizen/districts', fetchSocialStatuses: 'citizen/socialStatuses', fetchRegions: 'citizen/regions', rejected: 'application/rejected', confirmed: 'application/confirmed' }),
-    rejectApplication(id) {
-      // console.log(this.status)
-      this.status = 3
-      this.rejected(id)
-      //     .then((res) => {
-      //   this.sendFilter()
-      //   this.status = id
-      // })
+    ...mapActions({ fetchApplications: 'application/index', fetchDenyReasons: 'application/denyReasons',
+      fetchDistricts: 'application/districts', fetchSocialStatuses: 'application/socialStatuses', fetchRegions: 'application/regions', rejected: 'application/rejected', confirmed: 'application/confirmed' }),
+    showModal(id) {
+      this.rejectedApp = id
+      this.isModalVisible = true
+    },
+    showDialog(id) {
+      this.form.id = id
+      this.warningDialog = true
+    },
+    closeModal() {
+      this.isModalVisible = false
+      this.$router.push({ name: 'ApplicationIndex' })
+    },
+    rejectApplication(data) {
+      console.log(data)
+      this.status = 2
+      this.rejected(data)
+      this.warningDialog = false
     },
     confirmApplication(id) {
-      // console.log(this.status)
-      this.status = 2
+      this.status = 1
       this.confirmed(id)
-      //     .then((res) => {
-      //   this.sendFilter()
-      //   this.status = id
-      // })
     },
     getTime(date) {
       return parseTime(date)
@@ -334,7 +384,7 @@ export default {
       return []
     },
     handleClick(tab, event) {
-      console.log(tab, event);
+      console.log(tab, event)
     }
   }
 }

@@ -26,7 +26,7 @@
                   <div class="citizen_details">
 <!--                    <el-col :xs="24" :sm="12" :lg="6" :xl="6">-->
                     <el-form-item label="Ариза қолдириш учун телефон рақамингизни киритинг" prop="phone_number">
-                      <el-input ref="phone_number" v-model="form.phone_number" v-mask="'############'" class="phone_number-input" @keyup.enter.native="sendMessage">
+                      <el-input ref="phone_number" v-model="form.phone_number" v-mask="'#########'" class="phone_number-input" @keyup.enter.native="sendMessage">
                         <template slot="prepend">+998</template>
                       </el-input>
                     </el-form-item>
@@ -36,23 +36,15 @@
                         <el-input ref="code" v-model="form.code" v-mask="'#####'" placeholder="SMS kodni kiriting" @keyup.enter.native="confirmation" />
                       </el-form-item>
                     </el-col>
-                    <el-col v-if="confirmDialog || (!confirmDialog && !form.is_confirmed)" :xs="24" :sm="24" :lg="3" :xl="confirmDialog ? 3 : 4">
+                    <el-row v-if="confirmDialog || (!confirmDialog && !form.is_confirmed)" :xs="2" :sm="24" :lg="3" :xl="confirmDialog ? 3 : 4">
                       <el-form-item label=" ">
-                        <el-button v-if="confirmDialog" :loading="loading === 'code'" type="primary" class="btn-main-color float-end" icon="el-icon-check" @click="confirmation">Tasdiqlash</el-button>
-                        <el-button v-if="!confirmDialog" :loading="loading === 'send'" :disabled="startCountDown" type="primary" class="btn-main-color float-end" icon="el-icon-s-promotion" @click="sendMessage">SMS jo'natish {{ startCountDown ? '( ' + countdown + ' )' : '' }}</el-button>
+                        <el-button v-if="confirmDialog" :loading="loading === 'code'" type="primary" class="w-100 btn-main-color float-end" icon="el-icon-check" @click="confirmation">Tasdiqlash</el-button>
+                        <el-button v-if="!confirmDialog" :loading="loading === 'send'" :disabled="startCountDown" type="primary" class="w-100 btn-main-color float-end" icon="el-icon-s-promotion" @click="sendMessage">SMS jo'natish {{ startCountDown ? '( ' + countdown + ' )' : '' }}</el-button>
                       </el-form-item>
-                    </el-col>
+                    </el-row>
                   </div>
                 </el-form>
-
-<!--                <el-row v-if="goo">-->
-<!--                  <router-link :to="{name: 'ApplicationsCreate', query: { type: $route.query.type } }">-->
-<!--                    <el-button type="primary" class="w-100">{{ $t('Кейинги') }}</el-button>-->
-<!--                  </router-link>-->
-<!--&lt;!&ndash;                  <el-button type="primary" class="w-100"  @click="goToForm">{{ $t('Кейинги') }}</el-button>&ndash;&gt;-->
-<!--                </el-row>-->
               </el-card>
-              <!--              </router-link>-->
             </el-col>
           </el-col>
         </el-row>
@@ -116,7 +108,7 @@ export default {
     }),
     sendMessage() {
       if (!this.form.phone_number || this.form.phone_number.length !== 9) {
-        this.$message.error('Telefon raqamini kiriting!')
+        this.$message.error('Telefon raqamini to`g`ri kiriting!')
         return false
       }
       // console.log('phone_number : ' + this.form.phone_number)

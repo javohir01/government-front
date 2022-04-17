@@ -48,7 +48,7 @@
           :index="indexMethod"
           fixed
         />
-        <el-table-column label="" width="130" prop="region">
+        <el-table-column label="" width="200" prop="region">
           <template slot="header">
             <p>{{ $t('ФИО') }}</p>
             <input v-model="filter.full_name" class="form-control form-control-sm w-100">
@@ -59,7 +59,7 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="" width="130" prop="region">
+        <el-table-column v-if="user.role_id === 1" label="" width="140" prop="region">
           <template slot="header">
             <p>{{ $t('Ҳудуд') }}</p>
             <select v-model="filter.region_id" class="w-100" style="height: 28px" @change="sendFilterRegion">
@@ -74,7 +74,7 @@
 <!--            {{filter.region}}-->
           </template>
         </el-table-column>
-        <el-table-column width="140" prop="city">
+        <el-table-column v-if="user.role_id === 1 || user.role_id === 2" width="150" prop="district_id">
           <template slot="header">
             <p>{{ $t('Туман(Шахар)') }}</p>
             <select v-model="filter.district_id" class="w-100" style="height: 28px" @change="sendFilter">
@@ -89,7 +89,7 @@
             {{filter.district}}
           </template>
         </el-table-column>
-        <el-table-column width="140" prop="city">
+        <el-table-column width="180" prop="social_id">
           <template slot="header">
             <p>{{ $t('Ижтимоий холати') }}</p>
             <select v-model="filter.social_id" class="w-100" style="height: 28px" @change="sendFilter">
@@ -122,7 +122,7 @@
             {{ scope.row.birth_date }}
           </template>
         </el-table-column>
-        <el-table-column width="110">
+        <el-table-column width="130">
           <template slot="header">
             <p>{{ $t('Телефон рақами') }}</p>
             <input v-model="filter.phone_number" type="text" class="w-100">
@@ -150,7 +150,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="120"
+          width="110"
         >
           <template slot="header">
             <el-button class="mt-3" type="primary" size="mini" @click="sendFilter()">{{ $t('Қидириш') }}</el-button>
@@ -163,13 +163,21 @@
           </template>
         </el-table-column>
       </el-table>
+<!--      <el-pagination-->
+<!--        background-->
+<!--        :total="filter.total"-->
+<!--        :page-size="1 * filter.limit"-->
+<!--        layout="prev, pager, next"-->
+<!--        class="mt-3"-->
+<!--        @size-change="handleSizeChange"-->
+<!--        @current-change="handleCurrentChange"-->
+<!--      />-->
       <el-pagination
         background
         :total="filter.total"
         :page-size="1 * filter.limit"
         layout="prev, pager, next"
         class="mt-3"
-        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
     </div>
@@ -181,7 +189,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { parseTime } from '@/utils/'
 import { toXlsx } from '@/utils/exports'
 import Swal from 'sweetalert2'
-import Modal from '@/components/Modal'
+import Modal from '@/views/application/components/Modal'
 
 export default {
   name: 'CitizenIndex',
@@ -202,9 +210,9 @@ export default {
         passport: '',
         birth_date: null,
         pin: null,
-        limit: 0,
-        page: 0,
-        total: 1,
+        limit: 50,
+        page: 1,
+        total: null,
         region: '',
         phone_number: null,
         district: '',
@@ -319,9 +327,19 @@ export default {
       this.isModalVisible = false;
     },
     handleCurrentChange(val) {
-      this.filter.limit = this.citizens_pagination.limit
       this.filter.page = val
-      this.sendFilter()
+      this.isLoading = true
+      this.loaded = false
+      this.fetchCitizens(this.filter)
+        .then((res) => {
+          this.filter.limit = this.citizens_pagination.limit
+          this.filter.page = this.citizens_pagination.page
+          this.filter.total = this.citizens_pagination.total
+        })
+        .finally(() => {
+          this.isLoading = false
+          this.loaded = true
+        })
     },
     handleSizeChange(val) {
       this.filter.limit = val

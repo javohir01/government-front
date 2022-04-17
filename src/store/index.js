@@ -15,7 +15,7 @@ const store = new Vuex.Store({
     auth,
     citizen,
     application,
-    report,
+    report
   },
   getters
 })
