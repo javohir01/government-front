@@ -178,11 +178,12 @@ export default {
       return this.form.passport.length >= 9
     },
     isPinFull() {
+      // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.is_disabled = false
-      return this.form.pin.length >= 14
+      return this.form.pin.length >= 13
     },
     isNumberFull() {
-      return (this.form.passport.length >= 10)
+      return (this.form.passport.length >= 9)
     },
     isBirthDateFull() {
       return (this.form.birth_date && this.form.birth_date.length >= 10)
@@ -193,23 +194,23 @@ export default {
   },
   watch: {
     watch: {
-      isPassportFull(newVal, oldVal) {
-        console.log(newVal)
-        if (newVal && newVal !== oldVal) {
-          this.$refs.pin.focus()
-        } else {
-          this.clearForm()
-        }
-      },
-      // 'isPassportFull'(newVal, oldVal) {
+      // isPassportFull(newVal, oldVal) {
+      //   console.log(newVal)
       //   if (newVal && newVal !== oldVal) {
-      //     if (this.passport) {
-      //       setTimeout(() => {
-      //         this.$refs.pin.focusPin()
-      //       }, 10)
-      //     }
+      //     this.$refs.pin.focus()
+      //   } else {
+      //     this.clearForm()
       //   }
       // },
+      'isPassportFull'(newVal, oldVal) {
+        if (newVal && newVal !== oldVal) {
+          if (this.passport) {
+            setTimeout(() => {
+              this.$refs.pin.focusPin()
+            }, 8)
+          }
+        }
+      },
       'isBirthDateFull'(newVal, oldVal) {
         if (newVal && newVal !== oldVal) {
           if (this.isBirthDateTrue) {
@@ -223,6 +224,11 @@ export default {
         const a = newVal.slice(0, 2)
         if (a.match(/[0-9]+/)) {
           this.form.passport = this.form.passport.slice(2, this.form.passport.length)
+        }
+      },
+      'form.get_type'(newVal) {
+        if (this.delay) {
+          this.clearForm()
         }
       }
     },

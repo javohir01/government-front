@@ -5,19 +5,19 @@
     </router-link>
     <div class="bg-white box-shadow p-4">
       <el-table
-          class="table-custom"
-          :data="formdata"
-          border
+        class="table-custom"
+        :data="formdata"
+        border
       >
         <el-table-column
-            :label="$t('Номи')"
-            prop="name"
-            width="300"
-            class="font-weight-bold"
-        />
+          :label="$t('Номи')"
+          prop="name"
+          width="300"
+          class="font-weight-bold"
+    />
         <el-table-column
-            prop="value"
-            :label="$t('Қиймати')"
+          prop="value"
+          :label="$t('Қиймати')"
         />
       </el-table>
     </div>

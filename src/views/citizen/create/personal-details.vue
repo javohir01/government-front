@@ -42,10 +42,12 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item :label="$t('ЖШШИР')" :disabled="is_disabled">
+            <el-form-item :label="$t('ЖШШИР')" :disabled="is_disabled" prop="pin">
               <el-input
+                ref="pin"
                 v-model="form.pin"
                 v-mask="'##############'"
+                :class="{ 'full-input': isNumberPinFull }"
                 @keyup.enter.native="getCitizen"
               />
             </el-form-item>
@@ -75,7 +77,7 @@
         </el-row>
         <el-row>
           <el-col :span="6">
-            <el-form-item type="date" :label="$t('Туғилган куни')">
+            <el-form-item type="date" :label="$t('Туғилган куни')" prop="birth_date">
               <el-input
                 ref="birth_date"
                 v-model="form.birth_date"
@@ -87,17 +89,17 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item :label="$t('Манзили')">
+            <el-form-item :label="$t('Манзили')" prop="address">
               <el-input v-model="form.address" />
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item :label="$t('Телефон рақами')">
+            <el-form-item :label="$t('Телефон рақами')" prop="phone_number">
               <el-input v-model="form.phone_number" />
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item :label="$t('Ижтимоий холати')" prop="city_id">
+            <el-form-item :label="$t('Ижтимоий холати')" prop="social_id">
               <el-select v-model="form.social_id" class="w-100" filterable>
                 <el-option v-for="social_status in social_statuses" :key="social_status.id" :label="social_status.name" :value="social_status.id" />
               </el-select>
@@ -127,7 +129,7 @@ export default {
     return {
       loading: '',
       active: 0,
-      is_disabled: false,
+      is_disabled: true,
       rules: {
         l_name: [
           { required: true, message: 'Фамилияси киритилмаган', trigger: 'change' }
@@ -139,14 +141,20 @@ export default {
           { required: false, message: 'Отасининг исми киритилмаган', trigger: 'change' }
         ],
         pin: [
-          { required: true, message: 'ЖШШИР киритилмаган', trigger: 'change' }
+          { required: true, message: 'ЖШШИР киритилмаган', min: 14, max: 14, trigger: 'change' }
         ],
         passport: [
-          { required: true, message: 'Паспорт киритилмаган', trigger: 'change' }
+          { required: true, message: 'Паспорт киритилмаган', min: 10, max: 10, trigger: 'change' }
         ],
-        birth_date: [
-          { required: true, message: 'Туғилган сана киритилмаган', trigger: 'change' }
+        address: [
+          { required: true, message: 'Манзили киритилмаган', trigger: 'change' }
         ],
+        phone_number: [
+          { required: true, message: 'Телефон рақами киритилмаган', trigger: 'change' }
+        ],
+        social_id: [
+          { required: true, message: 'Ижтимоий холати киритилмаган', trigger: 'change' }
+        ]
       },
       validated: true,
       birth_date_disabled: true
@@ -162,8 +170,8 @@ export default {
     isNumberFull() {
       return (this.form.passport.length >= 10)
     },
-    isBirthDateFull() {
-      return (this.form.birth_date && this.form.birth_date.length >= 10)
+    isNumberPinFull() {
+      return (this.form.pin.length >= 14)
     },
     source() {
       return this.form.source
@@ -171,35 +179,46 @@ export default {
   },
 
   watch: {
-    // isNumberFull(newVal, oldVal) {
+    // isPinFull(newVal, oldVal) {
+    //   // if (!this.form.is_bg) {
+    //   console.log('newVal')
+    //   console.log(newVal)
+    //   console.log('oldVal')
+    //   console.log(oldVal)
     //   if (newVal && newVal !== oldVal) {
     //     this.form.source = 1
     //     this.getPassport()
     //   }
     // },
     isPassportFull(newVal, oldVal) {
-      // if (!this.form.is_bg) {
       if (newVal && newVal !== oldVal) {
+        this.$refs.pin.focus()
         if (this.delay) {
           this.getCitizen()
         }
       } else {
         this.clearForm()
+        this.is_disabled = true
       }
-      // }
+    },
+    isNumberPinFull(newVal, oldVal) {
+      if (newVal && newVal !== oldVal) {
+        if (this.form.passport.length >= 9) {
+          this.is_disabled = false
+        }
+        if (this.delay) {
+          this.getCitizen()
+        }
+      } else {
+        this.clearForm()
+        this.is_disabled = true
+      }
     },
     'form.region_id'(newVal, oldVal) {
       if (newVal && newVal !== oldVal) {
         this.fetchDistricts({ region_id: newVal }).then((res) => {
           this.districts = res.result.districts
         })
-      }
-    },
-    'isBirthDateFull'(newVal, oldVal) {
-      if ((newVal && newVal !== oldVal) && this.source === 2) {
-        if (!this.form.is_bg) {
-          this.getCitizenMVD()
-        }
       }
     },
     'form.passport'(newVal) {
@@ -237,19 +256,11 @@ export default {
           if (res.success && res.result.citizen && res.result.citizen.l_name) {
             this.setForm(res.result.citizen)
             this.is_disabled = true
-          } else if (res.code === 'db') {
-            Swal.fire({
-              title: typeof res.msg === 'string' ? res.msg : 'Фуқаро топилмади!',
-              type: 'error',
-              timer: 3000,
-              showConfirmButton: false,
-              confirmButtonText: 'Давом этиш'
-            })
           } else {
             this.source = 2
             this.$message({
               type: 'warning',
-              message: 'Туғилган санани киритинг',
+              message: 'Фуқаро топилмади!',
               duration: 5000
             })
           }
@@ -292,7 +303,15 @@ export default {
       this.form.l_name = ''
       this.form.m_name = ''
       this.form.address = ''
-      this.form.pin = ''
+      // this.form.pin = ''
+      this.form.birth_date = ''
+    },
+    clearPinForm() {
+      this.form.f_name = ''
+      this.form.l_name = ''
+      this.form.m_name = ''
+      this.form.address = ''
+      // this.form.passport = ''
       this.form.birth_date = ''
     },
     setForm(citizen) {

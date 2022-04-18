@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <router-link :to="{ name:'ApplicationsIndex', query: { type: $route.query.type } }">
+    <router-link :to="{ name:'ApplicationIndex', query: { type: $route.query.type } }">
       <el-button type="text" class="mb-1" icon="el-icon-arrow-left">{{ $t('Рўйҳатга қайтиш') }}</el-button>
     </router-link>
     <div class="bg-white box-shadow p-4">
@@ -63,7 +63,7 @@ export default {
         },
         {
           name: this.$t('холати'),
-          value: this.application.status
+          value: this.application.status.name
         },
         {
           name: this.$t('Ижтимоий холати'),

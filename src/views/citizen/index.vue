@@ -26,7 +26,7 @@
     <div v-loading="!loaded" class="bg-white box-shadow p-4">
       <template v-if="user.role_id === 3">
         <router-link :to="{name: 'ApplicationIndex', query: { type: $route.query.type } }">
-          <el-button type="success" class="float-left mb-4 font-weight-bold">{{ $t('Аризалар') }}</el-button>
+          <el-button type="success" class="float-left mb-4 font-weight-bold">{{ $t('Аризалар рўйхати') }}</el-button>
         </router-link>
       </template>
       <el-button type="success" class="float-right mb-4 font-weight-bold" icon="el-icon-download" :loading="isLoading" @click="exportToXlsx()">{{ $t('Юклаб олиш') }}</el-button>
@@ -48,7 +48,7 @@
           :index="indexMethod"
           fixed
         />
-        <el-table-column label="" width="200" prop="region">
+        <el-table-column label="" width="200" prop="full_name">
           <template slot="header">
             <p>{{ $t('ФИО') }}</p>
             <input v-model="filter.full_name" class="form-control form-control-sm w-100">
@@ -59,7 +59,8 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column v-if="user.role_id === 1" label="" width="140" prop="region">
+<!--        v-if="user.role_id === 1"-->
+        <el-table-column  label="" width="140" prop="region">
           <template slot="header">
             <p>{{ $t('Ҳудуд') }}</p>
             <select v-model="filter.region_id" class="w-100" style="height: 28px" @change="sendFilterRegion">
@@ -74,7 +75,8 @@
 <!--            {{filter.region}}-->
           </template>
         </el-table-column>
-        <el-table-column v-if="user.role_id === 1 || user.role_id === 2" width="150" prop="district_id">
+<!--        v-if="user.role_id === 1 || user.role_id === 2"-->
+        <el-table-column  width="150" prop="district">
           <template slot="header">
             <p>{{ $t('Туман(Шахар)') }}</p>
             <select v-model="filter.district_id" class="w-100" style="height: 28px" @change="sendFilter">
@@ -89,7 +91,7 @@
             {{filter.district}}
           </template>
         </el-table-column>
-        <el-table-column width="180" prop="social_id">
+        <el-table-column width="180" prop="social_status">
           <template slot="header">
             <p>{{ $t('Ижтимоий холати') }}</p>
             <select v-model="filter.social_id" class="w-100" style="height: 28px" @change="sendFilter">
@@ -104,7 +106,7 @@
             {{filter.social_status}}
           </template>
         </el-table-column>
-        <el-table-column width="110">
+        <el-table-column width="110" prop="address">
           <template slot="header">
             <p>{{ $t('Манзили') }}</p>
             <input v-model="filter.address" type="text" class="w-100">
@@ -113,16 +115,16 @@
             {{ scope.row.address }}
           </template>
         </el-table-column>
-        <el-table-column width="110">
+        <el-table-column width="110" prop="birth_date">
           <template slot="header">
             <p>{{ $t('туғилган куни') }}</p>
-            <input v-model="filter.birth_date" type="text" class="w-100">
+            <input v-model="filter.birth_date" v-mask="'##.##.####'" type="text" class="w-100">
           </template>
           <template slot-scope="scope">
             {{ scope.row.birth_date }}
           </template>
         </el-table-column>
-        <el-table-column width="130">
+        <el-table-column width="130" prop="phone_number">
           <template slot="header">
             <p>{{ $t('Телефон рақами') }}</p>
             <input v-model="filter.phone_number" type="text" class="w-100">
@@ -140,7 +142,7 @@
             <input v-model="filter.passport" class="form-control form-control-sm w-100">
           </template>
         </el-table-column>
-        <el-table-column width="120">
+        <el-table-column width="120" prop="pin">
           <template slot="header">
             <p>{{ $t('ЖШШИР') }}</p>
             <input v-model="filter.pin" class="form-control form-control-sm w-100">
@@ -163,15 +165,7 @@
           </template>
         </el-table-column>
       </el-table>
-<!--      <el-pagination-->
-<!--        background-->
-<!--        :total="filter.total"-->
-<!--        :page-size="1 * filter.limit"-->
-<!--        layout="prev, pager, next"-->
-<!--        class="mt-3"-->
-<!--        @size-change="handleSizeChange"-->
-<!--        @current-change="handleCurrentChange"-->
-<!--      />-->
+
       <el-pagination
         background
         :total="filter.total"
@@ -223,11 +217,11 @@ export default {
       columns: [
         {
           label: this.$t('Ҳудуд'),
-          field: 'scope.row.region.name_cyrl'
+          field: 'region'
         },
         {
-          label: this.$t('Туман(Шахар'),
-          field: 'row.district.name_cyrl'
+          label: this.$t('Туман(Шахар)'),
+          field: 'district'
         },
         {
           label: this.$t('ФИО'),
@@ -247,11 +241,11 @@ export default {
         },
         {
           label: this.$t('туғилган куни'),
-          field: 'scope.row.birth_date'
+          field: 'birth_date'
         },
         {
           label: this.$t('Ижтимоий холати'),
-          field: 'social_status.name'
+          field: 'social_status'
         }
       ],
       fullPage: true,
@@ -399,9 +393,15 @@ export default {
         const arr = []
         data.forEach(row => {
           arr.push({
+            region: row.region.name_cyrl,
+            district: row.district.name_cyrl,
             pin: row.pin,
-            full_name: [row.L_name, row.f_name, row.m_name].join(' '),
-            passport: row.passport
+            full_name: [row.l_name, row.f_name, row.m_name].join(' '),
+            passport: row.passport,
+            address: row.address,
+            phone_number: row.phone_number,
+            birth_date: row.birth_date,
+            social_status: row.social_status.name
           })
         })
         return arr

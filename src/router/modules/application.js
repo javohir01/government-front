@@ -22,7 +22,7 @@ const applicationsRouter = [
   },
   {
     name: 'ApplicationsShow',
-    path: 'applications/show',
+    path: 'applications/:id(\d+)',
     component: () => import('@/views/application/show'),
     // meta: { title: 'Изменить', noCache: true, activeMenu: 'applications' },
     hidden: true

@@ -58,7 +58,8 @@ export default {
         limit: 0,
         page: 0,
         total: 1,
-        full_name: ''
+        full_name: '',
+        get_type: 1,
       },
       delay: false
     }

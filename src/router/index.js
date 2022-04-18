@@ -46,8 +46,8 @@ export const constantRoutes = [
       {
         name: 'Choose',
         path: '/',
-        component: () => import('@/views/choose')
-        // meta: { middleware: [auth] }
+        component: () => import('@/views/choose'),
+        meta: { middleware: [!auth] }
       },
       {
         name: 'ApplicationIndex',

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h4 class="text-center">{{$t('Туман фуқаролар маълумотларини қўшиш') }}</h4>
+    <h4 class="text-center">{{$t('фуқаро маълумотларини қўшиш') }}</h4>
     <router-link :to="{ name:'CitizensIndex', query: { type: $route.query.type } }">
       <el-button type="text" class="mb-1" icon="el-icon-arrow-left">{{ $t('Рўйхатга қайтиш') }}</el-button>
     </router-link>

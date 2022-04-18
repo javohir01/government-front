@@ -1,6 +1,6 @@
 <template>
   <div clas="h-100">
-    <el-row>
+    <el-row v-if="!isShow">
       <el-row>
         <el-col :span="24" class="text-center">
           <h5>
@@ -41,20 +41,52 @@
                     </el-col>
                   </div>
                 </el-form>
-
-                <!--                <el-row v-if="goo">-->
-                <!--                  <router-link :to="{name: 'ApplicationsCreate', query: { type: $route.query.type } }">-->
-                <!--                    <el-button type="primary" class="w-100">{{ $t('Кейинги') }}</el-button>-->
-                <!--                  </router-link>-->
-                <!--&lt;!&ndash;                  <el-button type="primary" class="w-100"  @click="goToForm">{{ $t('Кейинги') }}</el-button>&ndash;&gt;-->
-                <!--                </el-row>-->
               </el-card>
-              <!--              </router-link>-->
             </el-col>
           </el-col>
         </el-row>
       </el-row>
     </el-row>
+    <div v-if="isShow" class="container containerMobile">
+      <div class="applicationCheckTableMobile">
+        <div>
+          <div class="applicationCheckBackButtonMobile mb-3" @click="backRoute()">
+            &#8592; Orqaga qaytish
+          </div>
+          <p class="text-center" style="font-size: 16px; margin: 0 0 20px;"> {{ application.fullname }} </p>
+          <p class="checkLabelMobile"><b>Manzil</b>:</p>
+          <p>{{ application.address }}</p>
+          <hr>
+          <p class="checkLabelMobile"><b>Ariza holati:</b></p>
+          <p>
+            {{ application.status == 1 ? '"Yoshlar daftari" ga muvaffaqiyatli kiritildingiz' :
+              (application.status == 2 ? 'Sizning "Yoshlar daftari" ga kirish to\'g\'risidagi arizangiz rad etildi' :
+                  'Sizning "Yoshlar daftari" ga kirish to\'g\'risidagi arizangiz mutaxassislar tomonidan ko\'rib chiqilyapti') }}
+          </p>
+          <hr>
+          <div v-if="application.status == 1">
+            <p class="checkLabelMobile"><b>Tasdiqlangan sana</b>: </p>
+            <p> {{ application.confirmed_at }}</p>
+            <hr>
+          </div>
+          <div v-if="application.status == 2">
+            <p class="checkLabelMobile"><b>Rad etish sababi</b>:</p>
+            <p>{{ application.application_deny_reason ? application.application_deny_reason.name : '-' }}</p>
+            <p class="checkLabelMobile"><b>Izoh</b>:</p>
+            <p>{{ application.deny_reason }}</p>
+            <p class="checkLabelMobile"><b>Rad etilgan sana</b>: </p>
+            <p>{{ application.confirmed_at }}</p>
+            <hr>
+          </div>
+        </div>
+        <div class="me-5">
+          <router-link :to="{ name: 'CitizenComplaint' }">
+            <button class=" appPrimaryButton">Shikoyat yuborish </button>
+          </router-link>
+        </div>
+      </div>
+
+    </div>
   </div>
 </template>
 
@@ -78,13 +110,25 @@ export default {
     return {
       is_disabled: true,
       validated: false,
-      // eslint-disable-next-line vue/no-dupe-keys
+      isShow: false,
       form: {
         number: '',
         code: ''
       },
       loading: '',
-      goo: false
+      goo: false,
+      application: {
+        address: '',
+        status: null,
+        confirmed_by_name: '',
+        confirmed_at: '',
+        deny_reason: '',
+        application_deny_reason: null,
+        comment: '',
+        confirmed_by_phone: '',
+        user_city: '',
+        user_city_sector: ''
+      },
     }
   },
   computed: {
@@ -152,18 +196,32 @@ export default {
         return false
       }
       if (!this.form.number) {
-        this.$message.error('IDni kiriting!')
+        this.$message.error('ИДни киритинг!')
         return false
       }
       // this.loading = 'code'
+      this.isLoading = true
       this.checkAction({ number: this.form.number, code: this.form.code }).then((res) => {
         if (res.success) {
-          this.form.is_confirmed = true
-          this.confirmDialog = false
-          this.$message.success('Muvaffaqiyatli tasdiqlandi!')
-          this.$emit('phone_numberSuccess', true)
-          this.goo = true
-          this.$router.push({ name: 'ApplicationCreate' })
+          console.log(res.result.application)
+          if (res.result.application.status === 0) {
+            const governor = res.result.application.district.name_cyrl
+            this.$message.success('Сизнинг аризангиз ' + governor + ' ҳокими томонидан текширилмоқда')
+          }
+          if (res.result.application.status === 1) {
+            const governor = res.result.application.district.name_cyrl
+            this.$message.success('Сизнинг аризангиз ' + governor + ' ҳокими томонидан тасдиқланди')
+          }
+          if (res.result.application.status === 2) {
+            const governor = res.result.application.district.name_cyrl
+            this.$message.success('Сизнинг аризангиз ' + governor + ' ҳокими томонидан рад етилган')
+          }
+          // this.form.is_confirmed = true
+          // this.confirmDialog = false
+          // this.$message.success('Muvaffaqiyatli tasdiqlandi!')
+          // this.$emit('phone_numberSuccess', true)
+          // this.goo = true
+          // this.$router.push({ name: 'ApplicationCreate' })
         } else {
           this.$message.error('Kod mos emas!')
         }

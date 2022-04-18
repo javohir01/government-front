@@ -12,7 +12,7 @@
     <div v-loading="!loaded" class="bg-white box-shadow p-4">
       <el-button type="success" class="float-right mb-4 font-weight-bold" icon="el-icon-download" :loading="isLoading" @click="exportToXlsx()">{{ $t('Юклаб олиш') }}</el-button>
       <el-radio-group v-model="filter.status" style="margin-bottom: 30px;" @change="sendFilter">
-        <el-radio-button value="0" label="0">Yangi</el-radio-button>
+        <el-radio-button value="0" label="0">Barchasi</el-radio-button>
         <el-radio-button value="1" label="1">Tasdiqlangan</el-radio-button>
         <el-radio-button value="2" label="2">Rad etilgan</el-radio-button>
       </el-radio-group>
@@ -148,7 +148,6 @@
         :page-size="1 * filter.limit"
         layout="prev, pager, next"
         class="mt-3"
-        @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
     </div>
@@ -228,9 +227,9 @@ export default {
         passport: '',
         birth_date: null,
         pin: null,
-        limit: 0,
-        page: 0,
-        total: 1,
+        limit: 50,
+        page: 1,
+        total: null,
         region: '',
         district: '',
         social_status: '',
@@ -244,7 +243,41 @@ export default {
         deny_reason_id: [
           { required: true, message: 'Сабаблардан бирини танланг', trigger: 'change' }
         ]
-      }
+      },
+      columns: [
+        {
+          label: this.$t('Ҳудуд'),
+          field: 'region'
+        },
+        {
+          label: this.$t('Туман(Шахар)'),
+          field: 'district'
+        },
+        {
+          label: this.$t('ФИО'),
+          field: 'full_name'
+        },
+        {
+          label: this.$t('Паспорт'),
+          field: 'passport'
+        },
+        {
+          label: this.$t('Манзили'),
+          field: 'address'
+        },
+        {
+          label: this.$t('ЖШШИР'),
+          field: 'pin'
+        },
+        {
+          label: this.$t('туғилган куни'),
+          field: 'birth_date'
+        },
+        {
+          label: this.$t('Ижтимоий холати'),
+          field: 'social_status'
+        }
+      ]
     }
   },
   computed: {
@@ -302,10 +335,12 @@ export default {
       this.status = 2
       this.rejected(data)
       this.warningDialog = false
+      this.$router.go(0)
     },
     confirmApplication(id) {
       this.status = 1
       this.confirmed(id)
+      this.$router.go(0)
     },
     getTime(date) {
       return parseTime(date)
@@ -374,9 +409,15 @@ export default {
         const arr = []
         data.forEach(row => {
           arr.push({
+            region: row.region.name_cyrl,
+            district: row.district.name_cyrl,
             pin: row.pin,
-            full_name: [row.L_name, row.f_name, row.m_name].join(' '),
-            passport: row.passport
+            full_name: [row.l_name, row.f_name, row.m_name].join(' '),
+            passport: row.passport,
+            address: row.address,
+            phone_number: row.phone_number,
+            birth_date: row.birth_date,
+            social_status: row.social_status.name
           })
         })
         return arr
