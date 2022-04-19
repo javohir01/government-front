@@ -34,10 +34,11 @@
               </template>
               <template v-else>
                 <el-input
+                  ref="passport"
                   v-model="form.passport"
                   v-mask="'XX #######'"
                   placeholder="AA 0000000"
-                  :class="{ 'full-input': isPassportFull }"
+                  :class="{ 'full-input': isNumberFull }"
                 />
               </template>
             </el-form-item>
@@ -45,9 +46,10 @@
           <el-col :span="8">
             <el-form-item :label="$t('ЖШШИР')" prop="pin">
               <el-input
+                ref="pin"
                 v-model="form.pin"
                 v-mask="'##############'"
-                :class="{ 'full-input': isPinFull }"
+                :class="{ 'full-input': isNumberPinFull }"
                 suffix-icon="el-icon-check"
                 @keyup.enter.native="getCitizen"
               />
@@ -147,10 +149,10 @@ export default {
       active: 0,
       rules: {
         pin: [
-          { required: true, message: 'ЖШШИР киритилмаган', trigger: 'change' }
+          { required: true, message: 'ЖШШИР киритилмаган', min: 14, max: 14, trigger: 'change' }
         ],
         passport: [
-          { required: true, message: 'Паспорт киритилмаган', trigger: 'change' }
+          { required: true, message: 'Паспорт киритилмаган', min: 9, max: 10, trigger: 'change' }
         ],
         address: [
           { required: true, message: 'Манзил киритилмаган', trigger: 'change' }
@@ -174,16 +176,18 @@ export default {
       social_statuses: 'citizen/GET_SOCIAL_STATUSES', regions: 'citizen/GET_REGIONS', districts: 'citizen/GET_DISTRICTS', phone_number: 'application/GET_PHONE_NUMBER'
     }),
     isPassportFull() {
-      // console.log(this.form.passport)
-      return this.form.passport.length >= 9
+      return this.form.passport.length >= 10
+    },
+    isNumberFull() {
+      return (this.form.passport.length >= 9)
+    },
+    isNumberPinFull() {
+      return (this.form.pin.length >= 14)
     },
     isPinFull() {
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.is_disabled = false
       return this.form.pin.length >= 13
-    },
-    isNumberFull() {
-      return (this.form.passport.length >= 9)
     },
     isBirthDateFull() {
       return (this.form.birth_date && this.form.birth_date.length >= 10)
@@ -194,21 +198,30 @@ export default {
   },
   watch: {
     watch: {
-      // isPassportFull(newVal, oldVal) {
-      //   console.log(newVal)
-      //   if (newVal && newVal !== oldVal) {
-      //     this.$refs.pin.focus()
-      //   } else {
-      //     this.clearForm()
-      //   }
-      // },
-      'isPassportFull'(newVal, oldVal) {
+      isPassportFull(newVal, oldVal) {
         if (newVal && newVal !== oldVal) {
-          if (this.passport) {
-            setTimeout(() => {
-              this.$refs.pin.focusPin()
-            }, 8)
+          console.log('kelli f')
+          this.$refs.pin.focus()
+          if (this.delay) {
+            this.getCitizen()
           }
+        } else {
+          console.log('kelli not f')
+          this.clearForm()
+          this.is_disabled = true
+        }
+      },
+      isNumberPinFull(newVal, oldVal) {
+        if (newVal && newVal !== oldVal) {
+          if (this.form.passport.length >= 9) {
+            this.is_disabled = false
+          }
+          if (this.delay) {
+            this.getCitizen()
+          }
+        } else {
+          this.clearForm()
+          this.is_disabled = true
         }
       },
       'isBirthDateFull'(newVal, oldVal) {
@@ -306,7 +319,6 @@ export default {
       return this.validated
     },
     getCitizen() {
-      this.isPassportLoading = true
       const passport = this.form.passport.replace(' ', '')
       this.isPassportLoading = true
       this.getCitizenAction({ passport: passport, pin: this.form.pin, type: this.app_modul, check: 1 })
@@ -315,17 +327,14 @@ export default {
             this.setForm(res.result.citizen)
             this.is_disabled = true
             this.show = true
-          }
-          // else if (res.code === 'db') {
-          //   Swal.fire({
-          //     title: typeof res.msg === 'string' ? res.msg : 'Фуқаро топилмади!',
-          //     type: 'error',
-          //     timer: 3000,
-          //     showConfirmButton: false,
-          //     confirmButtonText: 'Давом этиш'
-          //   })
-          // }
-          else {
+          } else if (!res.result['0']) {
+            this.source = 2
+            this.$message({
+              type: 'warning',
+              message: 'Фуқаро топилмади!',
+              duration: 5000
+            })
+          } else {
             this.$message({
               type: 'alert',
               message: 'Сиз аввал ариза жўнатгансиз ' + ' Ариза ҳолатини ' + 'ID: ' + res.result['0'].number + ' va Code: ' + res.result['0'].code + ' орқали текширинг ',

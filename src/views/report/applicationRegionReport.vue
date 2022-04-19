@@ -1,40 +1,38 @@
 <template>
   <div class="container">
-    <h4 class="text-center">{{ $t('Халқ депутатлари кенгаши аъзолари базага киритилиши бўйича') }} <br>{{ $t('МАЪЛУМОТ')}} </h4>
+    <h4 class="text-center">{{ $t('Ариза топширганлар ҳақида вилоятлар кесимида') }} <br>{{ $t('ҲИСОБОТ')}} </h4>
 <!--    <p class="text-center"><b><img alt="logo" src="@/assets/images/small-calendar.svg" height="14px"> ( {{ today }} {{ $t('ҳолатида') }} )</b></p>-->
     <div class="bg-white box-shadow p-4">
       <el-button type="success" class="float-right mb-4 font-weight-bold" icon="el-icon-download" :loading="isLoading" @click="exportToXlsx()">{{ $t('Юклаб олиш') }}</el-button>
-      <table class="table table-hover table-bordered mx-auto table-custom mb-1"  v-loading="isLoading">
+      <table class="table table-hover table-bordered" v-loading="isLoading" style="height:20px;overflow-y:scroll">
         <thead>
           <tr>
-            <th> {{ $t('Вилоятлар') }}</th>
-            <th v-for="social in social_statuses">{{ social.name }}</th>
+            <th rowspan="2"> {{ $t('Т/р') }}</th>
+            <th rowspan="2"> {{ $t('Ҳудудлар') }}</th>
+            <th>{{ $t('Жами') }}</th>
+            <th>{{ $t('Янги ') }}</th>
+            <th>{{ $t('Тасдиқланган') }}</th>
+            <th>{{ $t('Рад этилган') }}</th>
           </tr>
         </thead>
         <tbody>
           <template>
-            <tr v-for="social in report">
+            <tr v-for="app in report_count">
+              <td colspan="2" class="text-center"> {{ $t('Жами') }} </td>
+              <td> {{ app.all }} </td>
+              <td> {{ app.new }} </td>
+              <td> {{ app.confirmed  }} </td>
+              <td> {{ app.rejected }} </td>
+            </tr>
+            <tr v-for="(app1, index) in report " :key="index">
+              <td>{{ index + 1 }}</td>
               <td>
-                <a href="#" @click="showCityReport(social.region_id)">{{ social.region_name }}</a>
+                <a href="#" @click="showCityReport(app1.region_id)">{{ app1.region_name }}</a>
               </td>
-              <td> {{ social.social1 }} </td>
-              <td> {{ social.social2 }} </td>
-              <td> {{ social.social3 }} </td>
-              <td> {{ social.social4 }} </td>
-              <td> {{ social.social5 }} </td>
-              <td> {{ social.social6 }} </td>
-              <td> {{ social.social7 }} </td>
-              <td> {{ social.social8 }} </td>
-              <td> {{ social.social9 }} </td>
-              <td> {{ social.social10 }} </td>
-              <td> {{ social.social11 }} </td>
-              <td> {{ social.social12 }} </td>
-              <td> {{ social.social13 }} </td>
-              <td> {{ social.social14 }} </td>
-              <td> {{ social.social15 }} </td>
-              <td> {{ social.social16 }} </td>
-              <td> {{ social.social17 }} </td>
-              <td> {{ social.social18 }} </td>
+              <td> {{ app1.all }} </td>
+              <td> {{ app1.new }} </td>
+              <td> {{ app1.confirmed  }} </td>
+              <td> {{ app1.rejected }} </td>
             </tr>
           </template>
         </tbody>
@@ -100,9 +98,6 @@ export default {
         this.isLoading = false
       }
     })
-    this.fetchSocialStatuses().then((res) => {
-      this.sendFilter()
-    })
     this.fetchRegions().then((res) => {
       this.sendFilter()
     })
@@ -110,18 +105,16 @@ export default {
   // eslint-disable-next-line vue/order-in-components
   computed: {
     ...mapGetters({
-      report: 'report/GET_REPORT',
-      parties_report: 'report/GET_REPORT',
+      report: 'report/GET_APPLICATION_REGIONS_REPORT',
+      report_count: 'report/GET_APPLICATION_REGIONS_REPORT_COUNT',
       user: 'auth/USER',
-      social_statuses: 'citizen/GET_SOCIAL_STATUSES',
       regions: 'citizen/GET_REGIONS',
       citizens_pagination: 'citizen/GET_CITIZENS_PAGINATION'
     })
   },
   methods: {
     ...mapActions({
-      fetchReport: 'report/reportAll',
-      fetchSocialStatuses: 'citizen/socialStatuses',
+      fetchReport: 'report/reportApplicationRegions',
       fetchRegions: 'citizen/regions',
       sendFilter() {
         this.loaded = false
@@ -130,9 +123,15 @@ export default {
           this.limit = this.citizens_pagination.limit
         })
       },
-      showCityReport(region) {
-        localStorage.setItem('region_id', region.region)
-        this.$router.push({ name: 'DistrictReport', params: { region_id: region.id }})
+      // showCityReport(region) {
+      //   localStorage.setItem('region_id', region.region)
+      //   this.$router.push({ name: 'ApplicationDistrictReport', params: { region_id: region.id }})
+      // }
+      showCityReport(region_id) {
+        console.log(region_id)
+        localStorage.setItem('region_id', region_id)
+        console.log(region_id)
+        this.$router.push({ name: 'ApplicationDistrictReport', params: { region_id: region_id }})
       }
     })
   }

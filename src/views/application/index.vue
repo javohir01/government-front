@@ -10,6 +10,9 @@
 
     <h4 class="font-weight-bold">{{ title }}</h4>
     <div v-loading="!loaded" class="bg-white box-shadow p-4">
+      <router-link :to="{ name:'ApplicationRegionReport', query: { type: $route.query.type } }">
+        <el-button type="primary" class="float-right mb-4 font-weight-bold"><i class="el-icon-reading text-white" /> Ҳисобот </el-button>
+      </router-link>
       <el-button type="success" class="float-right mb-4 font-weight-bold" icon="el-icon-download" :loading="isLoading" @click="exportToXlsx()">{{ $t('Юклаб олиш') }}</el-button>
       <el-radio-group v-model="filter.status" style="margin-bottom: 30px;" @change="sendFilter">
         <el-radio-button value="0" label="0">Barchasi</el-radio-button>

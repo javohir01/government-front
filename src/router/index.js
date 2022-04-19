@@ -46,8 +46,9 @@ export const constantRoutes = [
       {
         name: 'Choose',
         path: '/',
-        component: () => import('@/views/choose'),
-        meta: { middleware: [!auth] }
+        component: () => import('@/views/choose')
+
+        // meta: { middleware: [!auth] }
       },
       {
         name: 'ApplicationIndex',
@@ -65,6 +66,18 @@ export const constantRoutes = [
         name: 'DistrictReport',
         path: 'report/:region_id',
         component: () => import('@/views/report/city'),
+        meta: { middleware: [auth] }
+      },
+      {
+        name: 'ApplicationRegionReport',
+        path: 'reportApplication',
+        component: () => import('@/views/report/applicationRegionReport'),
+        meta: { middleware: [auth] }
+      },
+      {
+        name: 'ApplicationDistrictReport',
+        path: 'report/:region_id',
+        component: () => import('@/views/report/applicationDistrictReport'),
         meta: { middleware: [auth] }
       },
       {

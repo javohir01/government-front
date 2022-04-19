@@ -59,16 +59,6 @@ import { mapActions } from 'vuex'
 
 export default {
   name: 'Choose',
-  props: {
-    form: {
-      type: Object,
-      default() {
-        return {
-
-        }
-      }
-    }
-  },
   data() {
     return {
       is_disabled: true,
@@ -77,7 +67,11 @@ export default {
       startCountDown: false,
       loading: '',
       countdown: 60,
-      goo: false
+      goo: false,
+      form: {
+        phone_number: '',
+        code: ''
+      }
     }
   },
   computed: {

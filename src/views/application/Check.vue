@@ -9,11 +9,9 @@
         </el-col>
       </el-row>
       <el-row class="d-flex justify-content-around mt-100">
-
         <el-row>
-          <el-col :xs="24" :sm="12" :lg="12" :xl="12" class="mr-10" style="padding-right:40px">
+          <el-col :xs="24" :sm="12" :lg="12" :xl="12" class="mr-10" style="padding-right:20px">
             <el-col :span="24" class="p-5">
-              <!--              <router-link :to="{ name: 'CitizensIndex', query: { type: 1 } }">-->
               <el-card class="box-card classic-style">
                 <el-form
                   ref="form"
@@ -24,17 +22,15 @@
                   class="top-label-custom"
                 >
                   <div class="citizen_details">
-                    <!--                    <el-col :xs="24" :sm="12" :lg="6" :xl="6">-->
                     <el-form-item label="Number" prop="number">
                       <el-input ref="number" v-model="form.number" v-mask="'######'" placeholder="ID ни киритинг" class="me-lg-3" />
                     </el-form-item>
-                    <!--                    </el-col>-->
                     <el-col :xs="210" :sm="120" :lg="23" :xl="23">
                       <el-form-item label="Code" prop="code" class="me-lg-3">
                         <el-input ref="code" v-model="form.code" v-mask="'#####'" placeholder="Code ни киритинг" />
                       </el-form-item>
                     </el-col>
-                    <el-col :xs="24" :sm="24" :lg="3" :xl="confirmDialog ? 3 : 4">
+                    <el-col :xs="24" :sm="24" :lg="3" :xl="4">
                       <el-form-item label=" ">
                         <el-button type="primary" class="btn-main-color float-end"  @click="check">Текшириш</el-button>
                       </el-form-item>
@@ -59,33 +55,27 @@
           <hr>
           <p class="checkLabelMobile"><b>Ariza holati:</b></p>
           <p>
-            {{ application.status == 1 ? '"Yoshlar daftari" ga muvaffaqiyatli kiritildingiz' :
-              (application.status == 2 ? 'Sizning "Yoshlar daftari" ga kirish to\'g\'risidagi arizangiz rad etildi' :
-                  'Sizning "Yoshlar daftari" ga kirish to\'g\'risidagi arizangiz mutaxassislar tomonidan ko\'rib chiqilyapti') }}
+            {{ application.status == 1 ? 'Сизнинг аризангиз ' + application.district + ' ҳокими томонидан тасдиқланди' :
+              (application.status == 2 ? 'Сизнинг аризангиз ' + application.district + ' ҳокими томонидан рад етилган' :
+                  'Сизнинг аризангиз ' + application.district + ' ҳокими томонидан текширилмоқда') }}
           </p>
           <hr>
-          <div v-if="application.status == 1">
+          <div v-if="application.status === 1 && application.updated_at">
             <p class="checkLabelMobile"><b>Tasdiqlangan sana</b>: </p>
-            <p> {{ application.confirmed_at }}</p>
+            <p> {{ application.updated_at }}</p>
             <hr>
           </div>
           <div v-if="application.status == 2">
             <p class="checkLabelMobile"><b>Rad etish sababi</b>:</p>
-            <p>{{ application.application_deny_reason ? application.application_deny_reason.name : '-' }}</p>
-            <p class="checkLabelMobile"><b>Izoh</b>:</p>
             <p>{{ application.deny_reason }}</p>
-            <p class="checkLabelMobile"><b>Rad etilgan sana</b>: </p>
-            <p>{{ application.confirmed_at }}</p>
+            <p class="checkLabelMobile"><b>Izoh</b>:</p>
+            <p>{{ application.deny_reason_comment ? application.deny_reason_comment : '-' }}</p>
+  <!--            <p class="checkLabelMobile"><b>Rad etilgan sana</b>: </p>-->
+  <!--            <p>{{ application.updated_at }}</p>-->
             <hr>
           </div>
         </div>
-        <div class="me-5">
-          <router-link :to="{ name: 'CitizenComplaint' }">
-            <button class=" appPrimaryButton">Shikoyat yuborish </button>
-          </router-link>
-        </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -121,10 +111,11 @@ export default {
         address: '',
         status: null,
         confirmed_by_name: '',
-        confirmed_at: '',
+        updated_at: '',
         deny_reason: '',
-        application_deny_reason: null,
+        deny_reason_comment: null,
         comment: '',
+        district: '',
         confirmed_by_phone: '',
         user_city: '',
         user_city_sector: ''
@@ -157,6 +148,10 @@ export default {
       sendMessageAction: 'application/sendMessage',
       checkAction: 'application/checkApplication'
     }),
+    backRoute() {
+      this.$router.push({ name: 'ApplicationCheck' })
+      this.isShow = false
+    },
     sendMessage() {
       if (!this.form.phone_number || this.form.phone_number.length !== 9) {
         this.$message.error('Telefon raqamini kiriting!')
@@ -216,12 +211,27 @@ export default {
             const governor = res.result.application.district.name_cyrl
             this.$message.success('Сизнинг аризангиз ' + governor + ' ҳокими томонидан рад етилган')
           }
-          // this.form.is_confirmed = true
-          // this.confirmDialog = false
-          // this.$message.success('Muvaffaqiyatli tasdiqlandi!')
-          // this.$emit('phone_numberSuccess', true)
-          // this.goo = true
-          // this.$router.push({ name: 'ApplicationCreate' })
+          if (res.result.application) {
+            this.isShow = true
+            const application = res.result.application
+            this.application.status = application.status
+            this.application.district = application.district.name_cyrl
+            this.application.fullname = [application.l_name, application.f_name, application.m_name].join(' ')
+            this.application.address = (application.region ? application.region.name_cyrl : '') + ', ' + (application.district ? application.district.name_cyrl : '')
+            this.application.confirmed_by_name = application.confirmed_by_name
+            this.application.updated_at = application.updated_at ? application.updated_at.split('-').reverse().join('.') : '-'
+            this.application.deny_reason = application.deny_reason ? application.deny_reason.name : '-'
+            this.application.deny_reason_comment = application.deny_reason_comment
+          } else {
+            Swal.fire({
+              title: 'Ma\'lumot topilmadi. ID yoki kodni tekshirib qaytadan kiriting',
+              type: 'error',
+              timer: 4000,
+              showConfirmButton: true,
+              confirmButtonText: 'Qaytadan kiritish'
+            })
+          }
+          this.isLoading = false
         } else {
           this.$message.error('Kod mos emas!')
         }
@@ -251,7 +261,155 @@ export default {
 }
 </script>
 <style scoped>
+.applicationCheckTable{
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px 0px;
+  position: static;
+  width: 1108px;
+  min-height: 497px;
+  left: 166px;
+  top: 222px;
+  background: #FFFFFF;
+  border-radius: 4px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin: 88px 0px;
+}
+.applicationCheckTableMobile{
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 12px 24px;
+  position: static;
+  width: 290px;
+  min-height: 404px;
+  left: 15px;
+  top: 108px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin: 32px auto;
+}
+.applicationCheckBackButton {
+  position: static;
+  width: 170px;
+  height: 24px;
+  left: 70px;
+  top: 0px;
+  font-family: 'SF-UI-Display';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  letter-spacing: 0.2px;
+  color: #0083FC;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin: 0px 6px;
+}
+.applicationCheckBackButtonMobile {
+  position: static;
+  width: 100px;
+  height: 17px;
+  left: 24px;
+  top: 0.5px;
+  cursor: pointer;
+  /* Small Medium */
 
+  font-family: 'SF-UI-Display';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 17px;
+  /* identical to box height, or 142% */
+
+  text-align: center;
+  letter-spacing: 0.2px;
+
+  /* color/blue */
+
+  color: #0083FC;
+
+  /* Inside Auto Layout */
+
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  margin: 0px 6px;
+}
+.hrLine{
+  width: 1108px;
+  height: 0px;
+  left: 0px;
+  top: 72px;
+  opacity: 0.2;
+  border: 1px solid #66BFFF;
+  flex: none;
+  order: 1;
+  align-self: stretch;
+  flex-grow: 0;
+  margin: 32px 0px;
+}
+table, td, th {
+  border: 1px solid #99D4FF;
+  text-align: left;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 24px;
+}
+.tableAppCheck{
+  margin: 24px 95px 24px 95px;
+  width: 918px;
+}
+.checkLabelMobile{
+  height: 14px;
+  left: 0px;
+  top: 0px;
+  font-family: 'SF-UI-Display';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 14px;
+  /* identical to box height, or 140% */
+
+  letter-spacing: 0.2px;
+  font-feature-settings: 'pnum' on, 'lnum' on;
+
+  /* $-gray/$-gray-400 */
+
+  color: #858585;
+
+  /* Inside Auto Layout */
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  margin: 6px 0px;
+}
+.ms-7R{
+  margin-left: 7rem !important;
+}
+@media (max-width: 300px){
+  .alert_succ_text {
+    width: 200px;
+    font-size: 16px;
+  }
+  .appPrimaryButton{
+    width: 157px;
+    font-size: 10px;
+    padding: 5px;
+  }
+}
 .box-card{
   border-radius: 10px;
   width: 450px !important;

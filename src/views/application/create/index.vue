@@ -59,7 +59,7 @@ export default {
         page: 0,
         total: 1,
         full_name: '',
-        get_type: 1,
+        get_type: 1
       },
       delay: false
     }

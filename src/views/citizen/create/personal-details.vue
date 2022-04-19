@@ -33,6 +33,7 @@
               </template>
               <template v-else>
                 <el-input
+                  ref="passport"
                   v-model="form.passport"
                   v-mask="'XX #######'"
                   placeholder="AA 0000000"
@@ -77,7 +78,7 @@
         </el-row>
         <el-row>
           <el-col :span="6">
-            <el-form-item type="date" :label="$t('Туғилган куни')" prop="birth_date">
+            <el-form-item type="date" :label="$t('Туғилган куни')" prop="form.birth_date">
               <el-input
                 ref="birth_date"
                 v-model="form.birth_date"
@@ -89,13 +90,15 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item :label="$t('Манзили')" prop="address">
+            <el-form-item :label="$t('Манзили')" prop="form.address">
               <el-input v-model="form.address" />
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item :label="$t('Телефон рақами')" prop="phone_number">
-              <el-input v-model="form.phone_number" />
+              <el-input v-model="form.phone_number" v-mask="'########'">
+                <template slot="prepend">+998</template>
+              </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -144,11 +147,11 @@ export default {
           { required: true, message: 'ЖШШИР киритилмаган', min: 14, max: 14, trigger: 'change' }
         ],
         passport: [
-          { required: true, message: 'Паспорт киритилмаган', min: 10, max: 10, trigger: 'change' }
+          { required: true, message: 'Паспорт киритилмаган', min: 9, max: 10, trigger: 'change' }
         ],
-        address: [
-          { required: true, message: 'Манзили киритилмаган', trigger: 'change' }
-        ],
+        // address: [
+        //   { required: true, message: 'Манзили киритилмаган', trigger: 'change' }
+        // ],
         phone_number: [
           { required: true, message: 'Телефон рақами киритилмаган', trigger: 'change' }
         ],
@@ -168,7 +171,7 @@ export default {
       return this.form.passport.length >= 10
     },
     isNumberFull() {
-      return (this.form.passport.length >= 10)
+      return (this.form.passport.length >= 9)
     },
     isNumberPinFull() {
       return (this.form.pin.length >= 14)
@@ -256,11 +259,17 @@ export default {
           if (res.success && res.result.citizen && res.result.citizen.l_name) {
             this.setForm(res.result.citizen)
             this.is_disabled = true
-          } else {
+          } else if (!res.result['0']) {
             this.source = 2
             this.$message({
               type: 'warning',
               message: 'Фуқаро топилмади!',
+              duration: 5000
+            })
+          } else {
+            this.$message({
+              type: 'alert',
+              message: 'Бу фуқаро базада мавжуд',
               duration: 5000
             })
           }

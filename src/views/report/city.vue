@@ -6,85 +6,81 @@
       </router-link>
     </el-row>
     <el-row>
-      <div class="container">
-        <h4 class="text-center">"Ўзагросуғурта" AЖ томонидан ПФ-5785 сон қарорга мувофиқ
-          хорижга вақтинча меҳнат фаолиятини амалга ошириш учун кетаётган Ўзбекистон Республикаси фуқароларига суғурта полиси расмийлаштирилиши бўйича <br> <b>ҲИСОБОТ</b></h4>
-        <p class="text-center">{{ current_date }} холатида</p>
+      <div class=" box-shadow p-4">
+        <div class="container   ">
+          <h4 class="text-center">Туманлар кесимида фуқаролар ҳақида <br> <b>ҲИСОБОТ</b></h4>
+          <p class="text-center">{{ current_date }} холатида</p>
+          <div class="bg-white box-shadow horizontal-scrollable" style="overflow-x:scroll!important;">
+            <table v-loading="isLoading" id="dtHorizontalVerticalExample" class="table table-hover table-bordered">
+              <thead>
+                <tr>
+                  <th rowspan="2"> {{ $t('Т/р') }}</th>
+                  <th rowspan="2"> {{ $t('Ҳудудлар') }}</th>
+                  <th colspan="2"> {{ $t('Жами аҳоли сони') }}</th>
+                  <th rowspan="2" v-for="social_status in social_statuses">{{ social_status.name }}</th>
+                </tr>
+                <tr>
+                  <th>Ариза бўйича</th>
+                  <th>Туман ҳокими томонидан</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template>
+                  <tr v-for="(count, index) in districts_report_count" :key="index">
+                    <td colspan="2"> Жами </td>
+                    <td> {{ count.sociala }}</td>
+                    <td> {{ count.socialt }}</td>
+                    <td> {{ count.social1 }}</td>
+                    <td> {{ count.social2 }}</td>
+                    <td> {{ count.social3 }}</td>
+                    <td> {{ count.social4 }}</td>
+                    <td> {{ count.social5 }}</td>
+                    <td> {{ count.social6 }}</td>
+                    <td> {{ count.social7 }}</td>
+                    <td> {{ count.social8 }}</td>
+                    <td> {{ count.social9 }}</td>
+                    <td> {{ count.social10 }}</td>
+                    <td> {{ count.social11 }}</td>
+                    <td> {{ count.social12 }}</td>
+                    <td> {{ count.social13 }}</td>
+                    <td> {{ count.social14 }}</td>
+                    <td> {{ count.social15 }}</td>
+                    <td> {{ count.social16 }}</td>
+                    <td> {{ count.social17 }}</td>
+                    <td> {{ count.social18 }}</td>
+                  </tr>
+                  <tr v-for="(social, index) in districts_report" :key="index">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ social.district_name }}</td>
+                    <td> {{ social.sociala }}</td>
+                    <td> {{ social.socialt }}</td>
+                    <td> {{ social.social1 }}</td>
+                    <td> {{ social.social2 }}</td>
+                    <td> {{ social.social3 }}</td>
+                    <td> {{ social.social4 }}</td>
+                    <td> {{ social.social5 }}</td>
+                    <td> {{ social.social6 }}</td>
+                    <td> {{ social.social7 }}</td>
+                    <td> {{ social.social8 }}</td>
+                    <td> {{ social.social9 }}</td>
+                    <td> {{ social.social10 }}</td>
+                    <td> {{ social.social11 }}</td>
+                    <td> {{ social.social12 }}</td>
+                    <td> {{ social.social13 }}</td>
+                    <td> {{ social.social14 }}</td>
+                    <td> {{ social.social15 }}</td>
+                    <td> {{ social.social16 }}</td>
+                    <td> {{ social.social17 }}</td>
+                    <td> {{ social.social18 }}</td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </el-row>
     <el-divider content-position="left">{{ region.region }}</el-divider>
-    <div class="bg-white box-shadow p-4 container">
-      <table v-loading="isLoading" class="table table-hover table-bordered">
-        <thead>
-          <tr>
-            <th> {{ $t('Т/р') }}</th>
-            <th> {{ $t('Ҳудудлар') }}</th>
-            <th> {{ $t('Жами аҳоли сони') }}</th>
-            <th v-for="social_status in social_statuses">{{ social_status.name }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <template>
-  <!--          <tr>-->
-  <!--            <td></td>-->
-  <!--            <td>{{ $t('Жами аҳоли сони') }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].citizens_count }}</td>-->
-  <!--&lt;!&ndash;            <td>{{ report_city.report_count[0].count_social1 }}</td>&ndash;&gt;-->
-  <!--            <td>{{ report_city.report_count[0].count_social2 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social3 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social4 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social5 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social6 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social7 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social8 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social9 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social10 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social11 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social12 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social13 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social14 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social15 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social16 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social17 }}</td>-->
-  <!--            <td>{{ report_city.report_count[0].count_social18 }}</td>-->
-  <!--          </tr>-->
-            <tr v-for="(social, index) in districts_report" :key="index">
-              <td>{{ index + 1 }}</td>
-              <td>{{ social.district_name }}</td>
-              <td> {{ social.socials }}</td>
-              <td> {{ social.social1 }}</td>
-              <td> {{ social.social2 }}</td>
-              <td> {{ social.social3 }}</td>
-              <td> {{ social.social4 }}</td>
-              <td> {{ social.social5 }}</td>
-              <td> {{ social.social6 }}</td>
-              <td> {{ social.social7 }}</td>
-              <td> {{ social.social8 }}</td>
-              <td> {{ social.social9 }}</td>
-              <td> {{ social.social10 }}</td>
-              <td> {{ social.social11 }}</td>
-              <td> {{ social.social12 }}</td>
-              <td> {{ social.social13 }}</td>
-              <td> {{ social.social14 }}</td>
-              <td> {{ social.social15 }}</td>
-              <td> {{ social.social16 }}</td>
-              <td> {{ social.social17 }}</td>
-              <td> {{ social.social18 }}</td>
-            </tr>
-          </template>
-        </tbody>
-      </table>
-<!--      <el-pagination-->
-<!--          background-->
-<!--          :total="reports.pagination.total"-->
-<!--          :page-size="1 * reports.pagination.limit"-->
-<!--          :page-sizes="[10, 20, 50]"-->
-<!--          layout="sizes, prev, pager, next"-->
-<!--          class="mt-3"-->
-<!--          @size-change="handleSizeChange"-->
-<!--          @current-change="handleCurrentChange"-->
-<!--      />-->
-    </div>
   </div>
 </template>
 
@@ -115,7 +111,7 @@ export default {
       },
       rules: {},
       loaded: false,
-      isLoading: false,
+      isLoading: false
     }
   },
   computed: {
@@ -124,7 +120,8 @@ export default {
       reports: 'report/GET_DISTRICTS_REPORT',
       regions: 'citizen/GET_REGIONS',
       social_statuses: 'citizen/GET_SOCIAL_STATUSES',
-      districts_report: 'report/GET_DISTRICTS_REPORT'
+      districts_report: 'report/GET_DISTRICTS_REPORT',
+      districts_report_count: 'report/GET_DISTRICTS_REPORT_COUNT'
     }),
     current_date() {
       return parseTime(new Date())
@@ -228,4 +225,83 @@ export default {
     }
   }
 }
+
 </script>
+<!--<script>-->
+<!--$(document).ready(function () {-->
+<!--  $('#dtHorizontalVerticalExample').DataTable({-->
+<!--    "scrollX": true,-->
+<!--    "scrollY": 200,-->
+<!--  });-->
+<!--  $('.dataTables_length').addClass('bs-select');-->
+<!--});-->
+<!--</script>-->
+
+<style>
+.form-control {
+  display: block;
+  width: 100%;
+  height: calc(1.5em + .75rem + 2px);
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  -webkit-transition: border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+  transition: border-color .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+}
+table tbody tr:first-child {
+  font-weight: bold;
+  color: #2F2F2F;
+}
+.table-responsive::-webkit-scrollbar {
+  height: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px #333333;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #333333;
+  outline: 1px solid #333333;
+}
+
+.info {
+  position: absolute;
+  width: 200px;
+  height: 100%;
+  background: linear-gradient(to right, transparent, #ffffff);
+  top: 0;
+  right: 0;
+  padding: 20px;
+  text-align: right;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transition: opacity 300ms ease-in-out, visibility 300ms ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+tr th:first-child, tr td:first-child {
+  position: sticky;
+  min-width: 50px;
+  left: 0;
+  background: white;
+}
+</style>
